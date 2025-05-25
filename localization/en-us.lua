@@ -261,6 +261,81 @@ return {
                     "Séance"
                 }
             },
+            doj_riff_raff = {
+                text = {
+                    "Riff-Raff"
+                }
+            },
+            doj_supernova = {
+                text = {
+                    "Supernova"
+                }
+            },
+            doj_smeared = {
+                text = {
+                    "Smeared Joker"
+                }
+            },
+            doj_ceremonial = {
+                text = {
+                    "Ceremonial Dagger"
+                }
+            },
+            doj_madness = {
+                text = {
+                    "Madness"
+                }
+            },
+            doj_8_ball = {
+                text = {
+                    "8 Ball"
+                }
+            },
+            doj_egg = {
+                text = {
+                    "Egg"
+                }
+            },
+            doj_popcorn = {
+                text = {
+                    "Popcorn"
+                }
+            },
+            doj_mr_bones = {
+                text = {
+                    "Mr. Bones"
+                }
+            },
+            doj_shoot_the_moon = {
+                text = {
+                    "Shoot the Moon"
+                }
+            },
+            doj_duo = {
+                text = {
+                    "The Duo"
+                }
+            },
+            doj_obelisk = {
+                text = {
+                    "Obelisk"
+                }
+            },
+            doj_sly = {
+                text = {
+                    "Sly Joker"
+                }
+            },
+            doj_crafty = {
+                text = {
+                    "Crafty Joker"
+                }
+            },
+            doj_to_the_moon = {
+                text = {
+                    "To the Moon"
+                }
+            },
         },
         CustomCard = {
             doj_joker = {
@@ -339,9 +414,10 @@ return {
             doj_runner = {
                 text = {
                     "{C:attention}Always Scores{}, {C:attention}Face Card{}",
-                    "Gains {C:chips}+#2#{} Chips",
-                    "if played hand",
-                    "contains a {C:attention}Straight{}",
+                    "Gains {C:chips}+#2#{} Chips if played",
+                    "hand contains a {C:attention}Straight{}",
+                    "while this card stays in",
+                    "hand or is played",
                     "{C:inactive}(Currently {C:chips}+#1#{C:inactive} Chips)"
                 }
             },
@@ -689,6 +765,137 @@ return {
                     "card while this card stays",
                     "in hand or is played",
                     "{C:inactive}(Must have room)"
+                }
+            },
+            doj_riff_raff = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "When {C:attention}Blind{} is selected,",
+                    "create {C:attention}#1# {C:blue}Common{C:attention} Jokers",
+                    "{C:inactive}(Must have room)"
+                }
+            },
+            doj_supernova = {
+                text = {
+                    "{C:attention}Always Scores{}",
+                    "Adds the number of times",
+                    "{C:attention}poker hand{} has been",
+                    "played this run to Mult"
+                }
+            },
+            doj_smeared = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "{C:hearts}Hearts{} and {C:diamonds}Diamonds",
+                    "count as the same suit,",
+                    "{C:spades}Spades{} and {C:clubs}Clubs",
+                    "count as the same suit"
+                }
+            },
+            doj_ceremonial = {
+                text = {
+                    "{C:attention}Always Scores{}",
+                    "Destroy Card to the right",
+                    "and permanently add {C:attention}double",
+                    "its sell value to this {C:red}Mult",
+                    "while this card stays in hand",
+                    "at {C:attention}end of round{}",
+                    "{C:inactive}(Currently {C:mult}+#1#{C:inactive} Mult)"
+                }
+            },
+            doj_madness = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "When {C:attention}Small Blind{} or {C:attention}Big Blind{}",
+                    "is selected, gain {X:mult,C:white} X#1# {} Mult",
+                    "and {C:attention}destroy{} a random Joker",
+                    "{C:inactive}(Currently {X:mult,C:white} X#2# {C:inactive} Mult)"
+                }
+            },
+            doj_8_ball = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}8{}",
+                    "{C:green}#1# in #2#{} chance for each",
+                    "played {C:attention}8{} to create a",
+                    "{C:tarot}Tarot{} card when scored",
+                    "{C:inactive}(Must have room)"
+                }
+            },
+            doj_egg = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "Gains {C:money}$#1#{} of {C:attention}sell{}",
+                    "{C:attention}value{} at end",
+                    "of round while this",
+                    "card stays in hand"
+                }
+            },
+            doj_popcorn = {
+                text = {
+                    "{C:attention}Always Scores{}",
+                    "{C:mult}+#1#{} Mult",
+                    "{C:mult}-#2#{} Mult per",
+                    "round played"
+                }
+            },
+            doj_mr_bones = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "Prevents Death if chips",
+                    "scored are at least {C:attention}25%{}",
+                    "of required chips while",
+                    "this card stayes in hand",
+                    "{S:1.1,C:red,E:2}self destructs{}"
+                }
+            },
+            doj_shoot_the_moon = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Queen{}, {C:attention}Face Card{}",
+                    "Each {C:attention}Queen{}",
+                    "held in hand",
+                    "gives {C:mult}+#1#{} Mult",
+                }
+            },
+            doj_duo = {
+                text = {
+                    "{C:attention}Always Scores{}",
+                    "{X:mult,C:white} X#1# {} Mult if played",
+                    "hand contains",
+                    "a {C:attention}#2#"
+                }
+            },
+            doj_obelisk = {
+                text = {
+                    "{C:attention}Always Scores{}",
+                    "This Joker gains {X:mult,C:white} X#1# {} Mult",
+                    "per {C:attention}consecutive{} hand played",
+                    "without playing your",
+                    "most played {C:attention}poker hand",
+                    "{C:inactive}(Currently {X:mult,C:white} X#2# {C:inactive} Mult)"
+                }
+            },
+            doj_sly = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "{C:chips}+#1#{} Chips if played",
+                    "hand contains",
+                    "a {C:attention}#2#"
+                }
+            },
+            doj_crafty = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "{C:chips}+#1#{} Chips if played",
+                    "hand contains",
+                    "a {C:attention}#2#"
+                }
+            },
+            doj_to_the_moon = {
+                text = {
+                    "{C:attention}Always Scores{}",
+                    "Earn an extra {C:money}$#1#{} of",
+                    "{C:attention}interest{} for every {C:money}$5{} you",
+                    "have at end of round"
                 }
             },
         }
