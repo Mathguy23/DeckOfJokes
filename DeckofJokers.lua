@@ -5,7 +5,7 @@
 --- MOD_AUTHOR: [mathguy]
 --- MOD_DESCRIPTION: Deck of Jokers
 --- DEPENDENCIES: [CustomCards]
---- VERSION: 1.0.2
+--- VERSION: 1.0.3
 ----------------------------------------------
 ------------MOD CODE -------------------------
 
@@ -3110,7 +3110,10 @@ function get_joker_key()
         local j = G.P_TRADING[pool[i]]
         local i = pool[i]
         if (not j.in_pool or j:in_pool()) and (not pc_cross_mod_cards[i] or not pc_cross_mod_cards[i].in_pool or pc_cross_mod_cards[i].in_pool()) then
-            table.insert(new_pool, j)
+            local joker_key = string.sub(i, 3)
+            if not G.GAME.banned_keys[joker_key] then
+                table.insert(new_pool, j)
+            end
         end
     end
     local key = pseudorandom_element(new_pool, pseudoseed('joker_trading'))
