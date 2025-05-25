@@ -115,7 +115,13 @@ end
 if self.ability and self.ability.trading and (self.ability.trading.name == "Throwback") then
     self.ability.trading.config.x_mult = 1 + G.GAME.skips * self.ability.trading.config.mod_x_mult
 end
-if (self.area == G.hand) and self.ability and self.ability.trading and (self.ability.trading.name == "Turtle Bean") then
+if self.ability and self.ability.trading and (self.ability.trading.name == "Driver's License") then
+    self.ability.trading.config.tally = 0
+    for k, v in pairs(G.playing_cards) do
+        if next(SMODS.get_enhancements(v)) then self.ability.trading.config.tally = self.ability.trading.config.tally+1 end
+    end
+end
+if (self.area == G.hand) and self.ability and self.ability.trading and (self.ability.trading.config.doj_hand_size or self.ability.trading.config.doj_discards) then
     local curr_debuff = self.debuff
     local old_debuff = self.ability.trading.config.doj_debuffed
     if curr_debuff == nil then
@@ -125,12 +131,20 @@ if (self.area == G.hand) and self.ability and self.ability.trading and (self.abi
     end
     if curr_debuff ~= old_debuff then
         self.ability.trading.config.doj_debuffed = curr_debuff
-        if curr_debuff then
-            G.hand.config.real_card_limit = (G.hand.config.real_card_limit or G.hand.config.card_limit) - self.ability.trading.config.doj_hand_size
-            G.hand.config.card_limit = math.max(0, G.hand.config.real_card_limit)
-        else
-            G.hand.config.real_card_limit = (G.hand.config.real_card_limit or G.hand.config.card_limit) + self.ability.trading.config.doj_hand_size
-            G.hand.config.card_limit = math.max(0, G.hand.config.real_card_limit)
+        if self.ability.trading.config.doj_hand_size then
+            if curr_debuff then
+                G.hand.config.real_card_limit = (G.hand.config.real_card_limit or G.hand.config.card_limit) - self.ability.trading.config.doj_hand_size
+                G.hand.config.card_limit = math.max(0, G.hand.config.real_card_limit)
+            else
+                G.hand.config.real_card_limit = (G.hand.config.real_card_limit or G.hand.config.card_limit) + self.ability.trading.config.doj_hand_size
+                G.hand.config.card_limit = math.max(0, G.hand.config.real_card_limit)
+            end
+        elseif self.ability.trading.config.doj_discards then
+            if curr_debuff then
+                ease_discard(-self.ability.trading.config.doj_discards)
+            else
+                ease_discard(self.ability.trading.config.doj_discards)
+            end
         end
     end
 end'''
@@ -144,6 +158,9 @@ position = 'after'
 payload = '''   if card.ability and card.ability.trading and card.ability.trading.config.doj_hand_size and (self == G.hand) then
         self.config.real_card_limit = (self.config.real_card_limit or self.config.card_limit) - card.ability.trading.config.doj_hand_size
         self.config.card_limit = math.max(0, self.config.real_card_limit)
+    end
+    if card.ability and card.ability.trading and card.ability.trading.config.doj_discards and (self == G.hand) then
+        ease_discard(-card.ability.trading.config.doj_discards)
     end'''
 match_indent = true
 
@@ -155,7 +172,18 @@ position = 'after'
 payload = '''   if card.ability and card.ability.trading and card.ability.trading.config.doj_hand_size and not card.debuff and (self == G.hand) then
         self.config.real_card_limit = (self.config.real_card_limit or self.config.card_limit) + card.ability.trading.config.doj_hand_size
         self.config.card_limit = math.max(0, self.config.real_card_limit)
+    end
+    if card.ability and card.ability.trading and card.ability.trading.config.doj_discards and (self == G.hand) then
+        ease_discard(card.ability.trading.config.doj_discards)
     end'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = 'functions/state_events.lua'
+pattern = '''limit = limit - 1 + (not card.debuff and card.edition and card.edition.card_limit or 0)'''
+position = 'before'
+payload = '''local old_limit = limit'''
 match_indent = true
 
 [[patches]]
@@ -164,7 +192,15 @@ target = 'functions/state_events.lua'
 pattern = '''if limit < 0 then break end'''
 position = 'before'
 payload = '''if card.ability and card.ability.trading and card.ability.trading.config.doj_hand_size and not card.debuff then
-    limit = limit + card.ability.trading.config.doj_hand_size
+    if limit + card.ability.trading.config.doj_hand_size < 0 then
+        if old_limit == 0 then
+            limit = -1
+        else
+            limit = 0
+        end
+    else
+        limit = limit + card.ability.trading.config.doj_hand_size
+    end
 end'''
 match_indent = true
 
@@ -173,7 +209,8 @@ match_indent = true
 target = 'functions/common_events.lua'
 pattern = '''for k, v in pairs(other.ability) do'''
 position = 'before'
-payload = '''local hand_size1 = not new_card.debuff and new_card.ability and new_card.ability.trading and new_card.ability.trading.config.doj_hand_size or 0'''
+payload = '''local hand_size1 = not new_card.debuff and new_card.ability and new_card.ability.trading and new_card.ability.trading.config.doj_hand_size or 0
+local discards1 = not new_card.debuff and new_card.ability and new_card.ability.trading and new_card.ability.trading.config.doj_discards or 0'''
 match_indent = true
 
 [[patches]]
@@ -182,11 +219,16 @@ target = 'functions/common_events.lua'
 pattern = '''if not strip_edition then '''
 position = 'before'
 payload = '''local hand_size2 = not new_card.debuff and new_card.ability and new_card.ability.trading and new_card.ability.trading.config.doj_hand_size or 0
+local discards2 = not new_card.debuff and new_card.ability and new_card.ability.trading and new_card.ability.trading.config.doj_discards or 0
 if new_card.area == G.hand then
     if hand_size1 ~= hand_size2 then
         local change = hand_size2 - hand_size1
         G.hand.config.real_card_limit = (G.hand.config.real_card_limit or G.hand.config.card_limit) + change
         G.hand.config.card_limit = math.max(0, G.hand.config.real_card_limit)
+    end
+    if discards1 ~= discards2 then
+        local change = discards2 - discards1
+        ease_discard(math.max(-G.GAME.current_round.discards_left, change))
     end
 end'''
 match_indent = true

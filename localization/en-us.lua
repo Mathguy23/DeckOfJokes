@@ -336,6 +336,31 @@ return {
                     "To the Moon"
                 }
             },
+            doj_merry_andy = {
+                text = {
+                    "Merry Andy"
+                }
+            },
+            doj_burglar = {
+                text = {
+                    "Burglar"
+                }
+            },
+            doj_hit_the_road = {
+                text = {
+                    "Hit the Road"
+                }
+            },
+            doj_seeing_double = {
+                text = {
+                    "Seeing Double"
+                }
+            },
+            doj_drivers_license = {
+                text = {
+                    "Driver's License"
+                }
+            },
         },
         CustomCard = {
             doj_joker = {
@@ -896,6 +921,48 @@ return {
                     "Earn an extra {C:money}$#1#{} of",
                     "{C:attention}interest{} for every {C:money}$5{} you",
                     "have at end of round"
+                }
+            },
+            doj_merry_andy = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "{C:red}+#1#{} discards",
+                    "{C:red}#2#{} hand size"
+                }
+            },
+            doj_burglar = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "When {C:attention}Blind{} is selected,",
+                    "gain {C:blue}+#1#{} Hands and",
+                    "{C:attention}lose all discards"
+                }
+            },
+            doj_hit_the_road = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Jack{}, {C:attention}Face Card{}",
+                    "This Joker gains {X:mult,C:white} X#1# {} Mult",
+                    "for every {C:attention}Jack{}",
+                    "discarded this round",
+                    "{C:inactive}(Currently {X:mult,C:white} X#2# {C:inactive} Mult)"
+                }
+            },
+            doj_seeing_double = {
+                text = {
+                    "{C:attention}Always Scores{}",
+                    "{X:mult,C:white} X#1# {} Mult if played",
+                    "hand has a scoring",
+                    "{C:clubs}Club{} card and a scoring",
+                    "card of any other {C:attention}suit",
+                }
+            },
+            doj_drivers_license = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "{X:mult,C:white} X#1# {} Mult if you have",
+                    "at least {C:attention}16{} Enhanced",
+                    "cards in your full deck",
+                    "{C:inactive}(Currently {C:attention}#2#{C:inactive})"
                 }
             },
         }
