@@ -5,7 +5,7 @@
 --- MOD_AUTHOR: [mathguy]
 --- MOD_DESCRIPTION: Deck of Jokers
 --- DEPENDENCIES: [CustomCards]
---- VERSION: 1.0.0
+--- VERSION: 1.0.1
 ----------------------------------------------
 ------------MOD CODE -------------------------
 
@@ -66,16 +66,13 @@ end
 
 local old_ability = Card.set_ability 
 function Card:set_ability(center, initial, delay_sprites)
-    local is_turtle_beans1 = (self and self.ability and self.ability.trading and (self.ability.trading.name == "Turtle Bean") and not self.debuff)
-    local hand_size = self and self.ability and self.ability.trading and self.ability.trading.config.doj_hand_size or 5
+    local hand_size1 = not self.debuff and self.ability and self.ability.trading and self.ability.trading.config.doj_hand_size or 0
     old_ability(self, center, initial, delay_sprites)
-    local is_turtle_beans2 = (self and self.ability and self.ability.trading and (self.ability.trading.name == "Turtle Bean") and not self.debuff)
+    local hand_size2 = not self.debuff and self.ability and self.ability.trading and self.ability.trading.config.doj_hand_size or 0
     if self.area == G.hand then
-        if is_turtle_beans1 and not is_turtle_beans2 then
-            G.hand.config.real_card_limit = (G.hand.config.real_card_limit or G.hand.config.card_limit) - hand_size
-            G.hand.config.card_limit = math.max(0, G.hand.config.real_card_limit)
-        elseif not is_turtle_beans1 and is_turtle_beans2 then
-            G.hand.config.real_card_limit = (G.hand.config.real_card_limit or G.hand.config.card_limit) + (self and self.ability and self.ability.trading and self.ability.trading.config.doj_hand_size or 5)
+        if hand_size1 ~= hand_size2 then
+            local change = hand_size2 - hand_size1
+            G.hand.config.real_card_limit = (G.hand.config.real_card_limit or G.hand.config.card_limit) + change
             G.hand.config.card_limit = math.max(0, G.hand.config.real_card_limit)
         end
     end
@@ -2288,7 +2285,7 @@ function get_joker_key()
         pool = doj_joker_pools[1]
     elseif rarity_pick < 0.95 then
         pool = doj_joker_pools[2]
-    elseif rarity_pick < 0.995 then
+    elseif rarity_pick < 0.99 then
         pool = doj_joker_pools[3]
     else
         pool = doj_joker_pools[4]

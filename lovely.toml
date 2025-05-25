@@ -141,7 +141,7 @@ match_indent = true
 target = 'cardarea.lua'
 pattern = '''if self.cards[i] == card then'''
 position = 'after'
-payload = '''   if card.ability and card.ability.trading and card.ability.trading.config.doj_hand_size then
+payload = '''   if card.ability and card.ability.trading and card.ability.trading.config.doj_hand_size and (self == G.hand) then
         self.config.real_card_limit = (self.config.real_card_limit or self.config.card_limit) - card.ability.trading.config.doj_hand_size
         self.config.card_limit = math.max(0, self.config.real_card_limit)
     end'''
@@ -165,5 +165,28 @@ pattern = '''if limit < 0 then break end'''
 position = 'before'
 payload = '''if card.ability and card.ability.trading and card.ability.trading.config.doj_hand_size and not card.debuff then
     limit = limit + card.ability.trading.config.doj_hand_size
+end'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = 'functions/common_events.lua'
+pattern = '''for k, v in pairs(other.ability) do'''
+position = 'before'
+payload = '''local hand_size1 = not new_card.debuff and new_card.ability and new_card.ability.trading and new_card.ability.trading.config.doj_hand_size or 0'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = 'functions/common_events.lua'
+pattern = '''if not strip_edition then '''
+position = 'before'
+payload = '''local hand_size2 = not new_card.debuff and new_card.ability and new_card.ability.trading and new_card.ability.trading.config.doj_hand_size or 0
+if new_card.area == G.hand then
+    if hand_size1 ~= hand_size2 then
+        local change = hand_size2 - hand_size1
+        G.hand.config.real_card_limit = (G.hand.config.real_card_limit or G.hand.config.card_limit) + change
+        G.hand.config.card_limit = math.max(0, G.hand.config.real_card_limit)
+    end
 end'''
 match_indent = true
