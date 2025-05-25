@@ -311,7 +311,7 @@ function find_joker(name, non_debuff)
     if next(result) then
         return result
     end
-    if name == "Showman" then
+    if G.playing_cards and (name == "Showman") then
         local showmen = {}
         for i = 1, #G.playing_cards do
             local card = G.playing_cards[i]
@@ -320,7 +320,7 @@ function find_joker(name, non_debuff)
             end
         end
         return showmen
-    elseif name == "Astronomer" then
+    elseif G.playing_cards and (name == "Astronomer") then
         local astronomers = {}
         for i = 1, #G.playing_cards do
             local card = G.playing_cards[i]
@@ -339,7 +339,7 @@ function SMODS.find_card(key, count_debuffed)
     if next(result) then
         return result
     end
-    if key == "j_ring_master" then
+    if G.playing_cards and (key == "j_ring_master") then
         local showmen = {}
         for i = 1, #G.playing_cards do
             local card = G.playing_cards[i]
@@ -348,7 +348,7 @@ function SMODS.find_card(key, count_debuffed)
             end
         end
         return showmen
-    elseif key == "j_astronomer" then
+    elseif G.playing_cards and (key == "j_astronomer") then
         local astronomers = {}
         for i = 1, #G.playing_cards do
             local card = G.playing_cards[i]
