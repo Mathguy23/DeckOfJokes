@@ -965,11 +965,20 @@ return {
                     "{C:inactive}(Currently {C:attention}#2#{C:inactive})"
                 }
             },
+        },
+        Tarot = {
+            c_doj_cool_judgement = {
+                name = "Judgement",
+                text = {
+                    "Convert a selected card",
+                    "into a {C:dark_edition}Joker{} card"
+                }
+            }
         }
     },
     misc = {
         dictionary = {
-            
+            k_paper_buffoon_pack = "Paper Buffoon Pack"
         },
         v_dictionary = {
             

@@ -5,11 +5,13 @@
 --- MOD_AUTHOR: [mathguy]
 --- MOD_DESCRIPTION: Deck of Jokers
 --- DEPENDENCIES: [CustomCards]
---- VERSION: 1.0.3
+--- VERSION: 1.0.4
 ----------------------------------------------
 ------------MOD CODE -------------------------
 
 SMODS.Atlas({ key = "decks", atlas_table = "ASSET_ATLAS", path = "decks.png", px = 71, py = 95})
+
+SMODS.Atlas({ key = "sprites", atlas_table = "ASSET_ATLAS", path = "sprites.png", px = 71, py = 95})
 
 function chaos_the_clown_check()
     if G and G.playing_cards then
@@ -3149,6 +3151,73 @@ SMODS.Back {
             return true
             end
         }))
+    end
+}
+
+SMODS.Tarot {
+    key = 'cool_judgement',
+    atlas = "sprites",
+    pos = {x = 0, y = 0},
+    config = {max_highlighted = 1},
+    use = function(self, card, area, copier)
+        local used_tarot = copier or card
+        G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.4, func = function()
+            play_sound('tarot1')
+            used_tarot:juice_up(0.3, 0.5)
+            return true end }))
+        for i=1, #G.hand.highlighted do
+            local percent = 1.15 - (i-0.999)/(#G.hand.highlighted-0.998)*0.3
+            G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() G.hand.highlighted[i]:flip();play_sound('card1', percent);G.hand.highlighted[i]:juice_up(0.3, 0.3);return true end }))
+        end
+        delay(0.2)
+        for i=1, #G.hand.highlighted do
+            G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.1,func = function()
+                local key = get_joker_key()
+                G.hand.highlighted[i]:set_ability(G.P_CENTERS["m_pc_trading"])
+                G.hand.highlighted[i].ability.trading = copy_table(G.P_TRADING[key])
+                G.hand.highlighted[i]:set_base(G.P_CARDS[G.P_TRADING[key].base])
+                G.hand.highlighted[i]:set_sprites(G.hand.highlighted[i].config.center)
+                return true 
+            end }))
+        end
+        delay(0.6)
+        for i=1, #G.hand.highlighted do
+            local percent = 0.85 + (i-0.999)/(#G.hand.highlighted-0.998)*0.3
+            G.E_MANAGER:add_event(Event({trigger = 'after',delay = 0.15,func = function() G.hand.highlighted[i]:flip();play_sound('tarot2', percent, 0.6);G.hand.highlighted[i]:juice_up(0.3, 0.3);return true end }))
+        end
+        G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.2,func = function() G.hand:unhighlight_all(); return true end }))
+        delay(0.5)
+    end,
+    loc_vars = function(self, info_queue, card)
+        return {vars = {card and card.ability.consumeable.max_highlighted or 1} }
+    end
+}
+
+SMODS.Booster {
+    key = 'paper_buffoon_normal_1',
+    atlas = 'sprites',
+    group_key = 'k_paper_buffoon_pack',
+    loc_txt = {
+        name = "Paper Buffoon Pack",
+        text = {
+            "Choose {C:attention}#1#{} of up to",
+            "{C:attention}#2#{C:dark_edition} Joker{} cards to",
+            "add to your deck"
+        }
+    },
+    weight = 4,
+    name = "Paper Buffoon Pack",
+    pos = {x = 1, y = 0},
+    config = {extra = 4, choose = 1, name = "Paper Buffoon Pack"},
+    create_card = function(self, card)
+        local key = G.P_TRADING[get_joker_key()]
+        local _card = Card(G.deck.T.x, G.deck.T.y, G.CARD_W, G.CARD_H, G.P_CARDS[key.base], G.P_CENTERS['m_pc_trading'], {playing_card = G.playing_card})
+        _card.ability.trading = copy_table(key)
+        _card:set_sprites(_card.config.center)
+        local edition = poll_edition('trading_edition'..G.GAME.round_resets.ante, 1, true)
+        _card:set_edition(edition)
+        _card:set_seal(SMODS.poll_seal({mod = 3}))
+        return _card
     end
 }
 
