@@ -1,0 +1,169 @@
+[manifest]
+version = "1.0.0"
+dump_lua = true
+priority = 0
+
+[[patches]]
+[patches.pattern]
+target = 'card.lua'
+pattern = '''elseif card_type == 'Default' or card_type == 'Enhanced' then'''
+position = 'after'
+payload = '''if self.ability and self.ability.trading and ((self.ability.trading.name == "Blueprint") or (self.ability.trading.name == "Brainstorm")) then
+    self.ability.doj_blueprint_compat_ui = self.ability.doj_blueprint_compat_ui or 'compat'
+    self.ability.doj_blueprint_compat_check = nil
+    main_end = (self.area and ((self.area == G.play) or (self.area == G.hand))) and {
+        {n=G.UIT.C, config={align = "bm", minh = 0.4}, nodes={
+            {n=G.UIT.C, config={ref_table = self, align = "m", colour = G.C.JOKER_GREY, r = 0.05, padding = 0.06, func = 'doj_blueprint_compat'}, nodes={
+                {n=G.UIT.T, config={ref_table = self.ability, ref_value = 'doj_blueprint_compat_ui',colour = G.C.UI.TEXT_LIGHT, scale = 0.32*0.8}},
+            }}
+        }}
+    } or nil
+end
+if self.ability and self.ability.trading and (self.ability.trading.name == "Luchador") and (self.area == G.hand) then
+    local disableable = G.GAME.blind and ((not G.GAME.blind.disabled) and (G.GAME.blind:get_type() == 'Boss'))
+    main_end = {
+        {n=G.UIT.C, config={align = "bm", minh = 0.4}, nodes={
+            {n=G.UIT.C, config={ref_table = self, align = "m", colour = disableable and G.C.GREEN or G.C.RED, r = 0.05, padding = 0.06}, nodes={
+                {n=G.UIT.T, config={text = ' '..localize(disableable and 'k_active' or 'ph_no_boss_active')..' ',colour = G.C.UI.TEXT_LIGHT, scale = 0.32*0.9}},
+            }}
+        }}
+    }
+end
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = 'card.lua'
+pattern = '''if self.ability.name == 'Blueprint' or self.ability.name == 'Brainstorm' then'''
+position = 'before'
+payload = '''if self.ability and self.ability.trading and ((self.ability.trading.name == "Blueprint") or (self.ability.trading.name == "Brainstorm")) and ((self.area == G.play) or (self.area == G.hand)) then
+    local other_joker = nil
+    for i = 1, #self.area.cards do
+        if self.area.cards[i] == self then other_joker = self.area.cards[i+1] end
+    end
+    if (self.ability.trading.name == "Brainstorm") then
+        other_joker = self.area.cards[1]
+    end
+    if other_joker and other_joker ~= self and other_joker.ability and other_joker.ability.trading and not other_joker.ability.trading.blueprint_incompat and other_joker.ability.trading.is_joker then
+        self.ability.doj_blueprint_compat = 'compatible'
+    else
+        self.ability.doj_blueprint_compat = 'incompatible'
+    end
+end
+'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = 'card.lua'
+pattern = '''if self.children.use_button then self.children.use_button:remove(); self.children.use_button = nil end'''
+position = 'after'
+payload = '''if self.children.doj_sell_button then self.children.doj_sell_button:remove(); self.children.doj_sell_button = nil end'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = 'card.lua'
+pattern = '''self.highlighted = is_higlighted'''
+position = 'after'
+payload = '''if self.playing_card then
+    if self.highlighted and self.ability and self.ability.trading and self.ability.trading.sellable and (self.area == G.hand) then
+        self.children.doj_sell_button = UIBox{
+            definition = G.UIDEF.doj_sell_buttons(self), 
+            config = {align=
+                    ((self.area == G.jokers) or (self.area == G.consumeables)) and "cr" or
+                    "bmi"
+                , offset = 
+                    ((self.area == G.jokers) or (self.area == G.consumeables)) and {x= - 0.4,y=-0.25*G.CARD_H} or
+                    {x=0,y=0.65},
+                parent =self}
+        }
+    elseif self.children.doj_sell_button then
+        self.children.doj_sell_button:remove()
+        self.children.doj_sell_button = nil
+    end
+end'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = 'card.lua'
+pattern = '''if self.ability.name == "Joker Stencil" then'''
+position = 'before'
+payload = '''if self.ability and self.ability.trading and (self.ability.trading.name == "Joker Stencil") then
+    self.ability.trading.config.x_mult = (G.jokers.config.card_limit - #G.jokers.cards)
+    for i = 1, #G.jokers.cards do
+        if G.jokers.cards[i].ability.name == 'Joker Stencil' then self.ability.trading.config.x_mult = self.ability.trading.config.x_mult + 1 end
+    end
+end
+if self.ability and self.ability.trading and (self.ability.trading.name == "Swashbuckler") then
+    local sell_cost = 0
+    for i = 1, #G.jokers.cards do
+        if G.jokers.cards[i] ~= self and (G.jokers.cards[i].area and G.jokers.cards[i].area == G.jokers) then
+            sell_cost = sell_cost + G.jokers.cards[i].sell_cost
+        end
+    end
+    self.ability.trading.config.mult = sell_cost
+end
+if self.ability and self.ability.trading and (self.ability.trading.name == "Stone Joker") then
+    self.ability.trading.config.stone_tally = 0
+    for k, v in pairs(G.playing_cards) do
+        if SMODS.has_enhancement(v, 'm_stone') then self.ability.trading.config.stone_tally = self.ability.trading.config.stone_tally + 1 end
+    end
+end
+if self.ability and self.ability.trading and (self.ability.trading.name == "Throwback") then
+    self.ability.trading.config.x_mult = 1 + G.GAME.skips * self.ability.trading.config.mod_x_mult
+end
+if (self.area == G.hand) and self.ability and self.ability.trading and (self.ability.trading.name == "Turtle Bean") then
+    local curr_debuff = self.debuff
+    local old_debuff = self.ability.trading.config.doj_debuffed
+    if curr_debuff == nil then
+        curr_debuff = false
+    else
+        curr_debuff = true
+    end
+    if curr_debuff ~= old_debuff then
+        self.ability.trading.config.doj_debuffed = curr_debuff
+        if curr_debuff then
+            G.hand.config.real_card_limit = (G.hand.config.real_card_limit or G.hand.config.card_limit) - self.ability.trading.config.doj_hand_size
+            G.hand.config.card_limit = math.max(0, G.hand.config.real_card_limit)
+        else
+            G.hand.config.real_card_limit = (G.hand.config.real_card_limit or G.hand.config.card_limit) + self.ability.trading.config.doj_hand_size
+            G.hand.config.card_limit = math.max(0, G.hand.config.real_card_limit)
+        end
+    end
+end'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = 'cardarea.lua'
+pattern = '''if self.cards[i] == card then'''
+position = 'after'
+payload = '''   if card.ability and card.ability.trading and card.ability.trading.config.doj_hand_size then
+        self.config.real_card_limit = (self.config.real_card_limit or self.config.card_limit) - card.ability.trading.config.doj_hand_size
+        self.config.card_limit = math.max(0, self.config.real_card_limit)
+    end'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = 'cardarea.lua'
+pattern = '''function CardArea:emplace(card, location, stay_flipped)'''
+position = 'after'
+payload = '''   if card.ability and card.ability.trading and card.ability.trading.config.doj_hand_size and not card.debuff and (self == G.hand) then
+        self.config.real_card_limit = (self.config.real_card_limit or self.config.card_limit) + card.ability.trading.config.doj_hand_size
+        self.config.card_limit = math.max(0, self.config.real_card_limit)
+    end'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = 'functions/state_events.lua'
+pattern = '''if limit < 0 then break end'''
+position = 'before'
+payload = '''if card.ability and card.ability.trading and card.ability.trading.config.doj_hand_size and not card.debuff then
+    limit = limit + card.ability.trading.config.doj_hand_size
+end'''
+match_indent = true
