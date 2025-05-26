@@ -361,6 +361,46 @@ return {
                     "Driver's License"
                 }
             },
+            doj_green_joker = {
+                text = {
+                    "Green Joker"
+                }
+            },
+            doj_pareidolia = {
+                text = {
+                    "Pareidolia"
+                }
+            },
+            doj_certificate = {
+                text = {
+                    "Certificate"
+                }
+            },
+            doj_gros_michel = {
+                text = {
+                    "Gros Michel"
+                }
+            },
+            doj_marble = {
+                text = {
+                    "Marble Joker"
+                }
+            },
+            doj_baron = {
+                text = {
+                    "Baron"
+                }
+            },
+            doj_cartomancer = {
+                text = {
+                    "Cartomancer"
+                }
+            },
+            doj_wily = {
+                text = {
+                    "Wily Joker"
+                }
+            },
         },
         CustomCard = {
             doj_joker = {
@@ -963,6 +1003,72 @@ return {
                     "at least {C:attention}16{} Enhanced",
                     "cards in your full deck",
                     "{C:inactive}(Currently {C:attention}#2#{C:inactive})"
+                }
+            },
+            doj_green_joker = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "{C:mult}+#1#{} Mult per hand played",
+                    "{C:mult}-#2#{} Mult per discard",
+                    "{C:inactive}(Currently {C:mult}+#3#{C:inactive} Mult)"
+                }
+            },
+            doj_pareidolia = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "All cards are",
+                    "considered",
+                    "{C:attention}face{} cards"
+                }
+            },
+            doj_certificate = {
+                text = {
+                    "{C:attention}Always Scores{}",
+                    "When {C:attention}drawn{}, add",
+                    "a random {C:attention}playing {C:attention}card{}",
+                    "with a random {C:attention}seal{}",
+                    "to your hand"
+                }
+            },
+            doj_gros_michel = {
+                text = {
+                    "{C:attention}Always Scores{}",
+                    "{C:mult}+#1#{} Mult",
+                    "{C:green}#2# in #3#{} chance this",
+                    "card is destroyed",
+                    "at end of round"
+                }
+            },
+            doj_marble = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "Adds one {C:attention}Stone{} card",
+                    "to deck when",
+                    "{C:attention}Blind{} is selected",
+                }
+            },
+            doj_baron = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}King{}, {C:attention}Face Card{}",
+                    "Each {C:attention}King{}",
+                    "held in hand",
+                    "gives {X:mult,C:white} X#1# {} Mult",
+                }
+            },
+            doj_cartomancer = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "Create a {C:tarot}Tarot{} card",
+                    "when {C:attention}Blind{} is selected",
+                    "{C:inactive}(Must have room)"
+                }
+            },
+            doj_wily = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "{C:chips}+#1#{} Chips if played",
+                    "hand contains",
+                    "a {C:attention}#2#"
                 }
             },
         },
