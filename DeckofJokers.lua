@@ -5,7 +5,7 @@
 --- MOD_AUTHOR: [mathguy]
 --- MOD_DESCRIPTION: Deck of Jokers
 --- DEPENDENCIES: [CustomCards]
---- VERSION: 1.0.5
+--- VERSION: 1.0.6
 ----------------------------------------------
 ------------MOD CODE -------------------------
 
@@ -97,6 +97,19 @@ function Card:set_ability(center, initial, delay_sprites)
         if discards1 ~= discards2 then
             local change = discards2 - discards1
             ease_discard(math.max(-G.GAME.current_round.discards_left, change))
+        end
+    end
+    if self.ability and self.ability.trading and (self.ability.trading.name == 'To Do List') then
+        local _poker_hands = {}
+        for k, v in pairs(G.GAME.hands) do
+            if v.visible then _poker_hands[#_poker_hands+1] = k end
+        end
+        local old_hand = self.ability.trading.config.poker_hand
+        self.ability.trading.config.poker_hand = nil
+
+        while not self.ability.trading.config.poker_hand do
+            self.ability.trading.config.poker_hand = pseudorandom_element(_poker_hands, pseudoseed((self.area and self.area.config.collection) and 'false_to_do' or 'to_do'))
+            if self.ability.trading.config.poker_hand == old_hand then self.ability.trading.config.poker_hand = nil end
         end
     end
     chaos_the_clown_check()
@@ -290,17 +303,24 @@ SMODS.PokerHandPart {
 SMODS.PokerHandPart {
     key = '_straight_four_fingers',
     func = function(hand)
-        local has_four_fingers = nil
+        local has_four_fingers = next(find_joker("Four Fingers"))
+        local has_shortcut = not not next(find_joker("Shortcut"))
         for i = 1, #hand do
             if hand[i].ability.trading and (hand[i].ability.trading.name == "Four Fingers") and not hand[i].debuff then
                 has_four_fingers = true
-                break
+            end
+            if hand[i].ability.trading and (hand[i].ability.trading.name == "Shortcut") and not hand[i].debuff then
+                has_shortcut = true
             end
         end
-        if not has_four_fingers then
-            return {}
+        if G.hand then
+            for i = 1, #G.hand.cards do
+                if G.hand.cards[i].ability.trading and (G.hand.cards[i].ability.trading.name == "Shortcut") and not G.hand.cards[i].debuff then
+                    has_shortcut = true
+                end
+            end
         end
-        return get_straight(hand, 4, not not next(SMODS.find_card('j_shortcut')))
+        return get_straight(hand, has_four_fingers and 4 or 5, has_shortcut)
     end,
 }
 
@@ -459,6 +479,8 @@ if pc_add_cross_mod_card then
                         x_mult = config_thing.x_mult,
                         card = context.other_card
                     })
+                elseif context.other_card:is_suit("Hearts") then
+                    table.insert(effects, {})
                 end
             elseif context.is_suit then
                 if ((context.is_suit == "Diamonds") and next(find_joker('Smeared Joker'))) or (context.is_suit == "Hearts") then
@@ -657,6 +679,8 @@ if pc_add_cross_mod_card then
                         card = context.other_card
                     })
                 end
+            elseif context.get_id then
+                return 14
             elseif context.does_score then
                 return true
             end
@@ -731,6 +755,7 @@ if pc_add_cross_mod_card then
                         return true
                     end
                 }))
+                playing_card_joker_effects({_card})
                 card_eval_status_text(blueprint_card or card, 'extra', nil, nil, nil, {message = localize('k_copied_ex'), colour = G.C.CHIPS})
             elseif context.does_score then
                 return true
@@ -1642,12 +1667,11 @@ if pc_add_cross_mod_card then
                 end
                 for i=1, #G.hand.cards do
                     local rank2 = get_smods_rank_from_id(G.hand.cards[i])
-                    if not next(rank2) then
-                        rank2.nominal = -999
-                    end
-                    if rank.nominal >= rank2.nominal then 
-                        card_ = G.hand.cards[i]
-                        rank = rank2
+                    if next(rank2) then
+                        if rank.nominal >= rank2.nominal then 
+                            card_ = G.hand.cards[i]
+                            rank = rank2
+                        end
                     end
                 end
                 if (rank.nominal ~= -999) and (card_ == context.other_card) then 
@@ -1924,10 +1948,10 @@ if pc_add_cross_mod_card then
         },
         calculate = function(card, effects, context, reps, blueprint_card, reps_i)
             local config_thing = card.ability.trading.config 
-            if context.before and (context.cardarea == G.play) then
+            if context.before and (context.cardarea == G.play) and not context.blueprint then
                 local faces = 0
                 for i = 1, #context.scoring_hand do
-                    if context.scoring_hand[i]:is_face() then 
+                    if (context.scoring_hand[i] ~= card) and context.scoring_hand[i]:is_face() then 
                         faces = faces + 1
                         context.scoring_hand[i]:set_ability(G.P_CENTERS.m_gold, nil, true)
                         G.E_MANAGER:add_event(Event({
@@ -2554,6 +2578,8 @@ if pc_add_cross_mod_card then
                             end},
                             card = blueprint_card or card
                         })
+                    elseif (context.other_card:get_id() == 8) and (#G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit) then
+                        table.insert(effects, {})
                     end
                 end
             elseif context.get_id then
@@ -2708,7 +2734,7 @@ if pc_add_cross_mod_card then
             name = "Shoot the Moon", 
             pos = {x=2,y=6},
             config = {mult = 13}, 
-            base = "C_A",
+            base = "C_Q",
             is_joker = true,
             joker_rarity = 1,
         },
@@ -3318,7 +3344,7 @@ if pc_add_cross_mod_card then
             name = "Baron", 
             pos = {x=6,y=12},
             config = {x_mult = 1.5}, 
-            base = "H_A",
+            base = "H_K",
             is_joker = true,
             joker_rarity = 3,
         },
@@ -3429,16 +3455,994 @@ if pc_add_cross_mod_card then
         end
     }
 
+    pc_add_cross_mod_card {
+        key = 'doj_oops',
+        card = {
+            key = 'doj_oops', 
+            unlocked = true, 
+            discovered = true, 
+            atlas = 'Joker', 
+            cost = 1, 
+            name = "Oops! All 6s", 
+            pos = {x=5,y=6},
+            config = {}, 
+            base = "S_A",
+            is_joker = true,
+            joker_rarity = 2,
+        },
+        calculate = function(card, effects, context, reps, blueprint_card, reps_i)
+            local config_thing = card.ability.trading.config 
+            if context.does_score then
+                return true
+            end
+        end,
+    }
+
+    pc_add_cross_mod_card {
+        key = 'doj_vampire',
+        card = {
+            key = 'doj_vampire', 
+            unlocked = true, 
+            discovered = true, 
+            atlas = 'Joker', 
+            cost = 1, 
+            name = "Vampire", 
+            pos = {x=2,y=12},
+            config = {x_mult = 1, mod_x_mult = 0.1}, 
+            base = "H_A",
+            is_joker = true,
+            joker_rarity = 2,
+        },
+        calculate = function(card, effects, context, reps, blueprint_card, reps_i)
+            local config_thing = card.ability.trading.config 
+            if context.before and (context.cardarea == G.play) and not context.blueprint then
+                local enhanced = {}
+                for k, v in ipairs(context.scoring_hand) do
+                    if (v ~= card) and v.config.center ~= G.P_CENTERS.c_base and not v.debuff and not v.vampired then 
+                        enhanced[#enhanced+1] = v
+                        v.vampired = true
+                        v:set_ability(G.P_CENTERS.c_base, nil, true)
+                        G.E_MANAGER:add_event(Event({
+                            func = function()
+                                v:juice_up()
+                                v.vampired = nil
+                                return true
+                            end
+                        })) 
+                    end
+                end
+
+                if #enhanced > 0 then 
+                    config_thing.x_mult = config_thing.x_mult + config_thing.mod_x_mult*#enhanced
+                    card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_xmult', vars = {config_thing.x_mult}}, colour = G.C.MULT})
+                end
+            elseif context.playing_card_main then
+                if config_thing.x_mult ~= 1 then
+                    table.insert(effects, {
+                        x_mult = config_thing.x_mult,
+                        card = blueprint_card or card
+                    })
+                end
+            elseif context.is_face then
+                return true
+            elseif context.does_score then
+                return true
+            end
+        end,
+        loc_vars = function(specific_vars, info_queue, card)
+            local config_thing = specific_vars.collect.config
+            return {config_thing.mod_x_mult, config_thing.x_mult}
+        end
+    }
+
+    pc_add_cross_mod_card {
+        key = 'doj_shortcut',
+        card = {
+            key = 'doj_shortcut', 
+            unlocked = true, 
+            discovered = true, 
+            atlas = 'Joker', 
+            cost = 1, 
+            name = "Shortcut", 
+            pos = {x=3,y=12},
+            config = {}, 
+            base = "S_A",
+            is_joker = true,
+            joker_rarity = 2,
+            blueprint_incompat = true,
+        },
+        calculate = function(card, effects, context, reps, blueprint_card, reps_i)
+            local config_thing = card.ability.trading.config 
+            if context.does_score then
+                return true
+            end
+        end,
+    }
+
+    pc_add_cross_mod_card {
+        key = 'doj_walkie_talkie',
+        card = {
+            key = 'doj_walkie_talkie', 
+            unlocked = true, 
+            discovered = true, 
+            atlas = 'Joker', 
+            cost = 1, 
+            name = "Walkie Talkie", 
+            pos = {x=8,y=15},
+            config = {chips = 10, mult = 4}, 
+            base = "C_A",
+            is_joker = true,
+            joker_rarity = 1,
+        },
+        calculate = function(card, effects, context, reps, blueprint_card, reps_i)
+            local config_thing = card.ability.trading.config
+            if context.individual and (context.cardarea == G.play) and (card.area == G.play) and not context.end_of_round then
+                local id = context.other_card:get_id()
+                if (id == 4) or (id == 10) then
+                    table.insert(effects, {
+                        mult = config_thing.mult,
+                        chips = config_thing.chips,
+                        card = context.other_card
+                    })
+                end
+            elseif context.get_id then
+                return 10
+            elseif context.does_score then
+                return true
+            end
+        end,
+        loc_vars = function(specific_vars, info_queue, card)
+            local config_thing = specific_vars.collect.config
+            return {config_thing.chips, config_thing.mult}
+        end
+    }
+
+    pc_add_cross_mod_card {
+        key = 'doj_baseball',
+        card = {
+            key = 'doj_baseball', 
+            unlocked = true, 
+            discovered = true, 
+            atlas = 'Joker', 
+            cost = 1, 
+            name = "Baseball Card", 
+            pos = {x=6,y=14},
+            config = {x_mult = 1.5}, 
+            base = "C_A",
+            is_joker = true,
+            joker_rarity = 3,
+        },
+        calculate = function(card, effects, context, reps, blueprint_card, reps_i)
+            local config_thing = card.ability.trading.config
+            if context.playing_card_main then
+                for i = 1, #G.jokers.cards do
+                    if (G.jokers.cards[i].config.center.rarity == 2) or (G.jokers.cards[i].config.center.rarity == "Uncommon") then
+                        table.insert(effects, {
+                            extra = {func = function()
+                                G.E_MANAGER:add_event(Event({
+                                    trigger = 'immediate',
+                                    func = (function()
+                                        G.jokers.cards[i]:juice_up()
+                                        return true
+                                end)}))
+                            end},
+                            x_mult = config_thing.x_mult,
+                            card = blueprint_card or card
+                        })
+                        
+                    end
+                end
+            elseif context.is_face then
+                return true
+            elseif context.does_score then
+                return true
+            end
+        end,
+        loc_vars = function(specific_vars, info_queue, card)
+            local config_thing = specific_vars.collect.config
+            return {config_thing.x_mult}
+        end
+    }
+
+    pc_add_cross_mod_card {
+        key = 'doj_gift_card',
+        card = {
+            key = 'doj_gift_card', 
+            unlocked = true, 
+            discovered = true, 
+            atlas = 'Joker', 
+            cost = 1, 
+            name = "Gift Card", 
+            pos = {x=3,y=13},
+            config = {sell_value = 1}, 
+            base = "D_A",
+            is_joker = true,
+            joker_rarity = 2,
+            blueprint_incompat = true,
+        },
+        calculate = function(card, effects, context, reps, blueprint_card, reps_i)
+            local config_thing = card.ability.trading.config
+            if context.end_of_round and (context.cardarea == G.hand) and not context.individual and not context.repetition and not context.blueprint then
+                for k, v in ipairs(G.jokers.cards) do
+                    if v.set_cost then 
+                        v.ability.extra_value = (v.ability.extra_value or 0) + config_thing.sell_value
+                        v:set_cost()
+                    end
+                end
+                for k, v in ipairs(G.consumeables.cards) do
+                    if v.set_cost then 
+                        v.ability.extra_value = (v.ability.extra_value or 0) + config_thing.sell_value
+                        v:set_cost()
+                    end
+                end
+                table.insert(effects, {
+                    message = localize("k_val_up"),
+                    colour = G.C.MONEY,
+                    card = card
+                })
+            elseif context.does_score then
+                return true
+            end
+        end,
+        loc_vars = function(specific_vars, info_queue, card)
+            local config_thing = specific_vars.collect.config
+            return {config_thing.sell_value}
+        end
+    }
+
+    pc_add_cross_mod_card {
+        key = 'doj_business',
+        card = {
+            key = 'doj_business', 
+            unlocked = true, 
+            discovered = true, 
+            atlas = 'Joker', 
+            cost = 1, 
+            name = "Business Card", 
+            pos = {x=1,y=4},
+            config = {odds = 2}, 
+            base = "D_A",
+            is_joker = true,
+            joker_rarity = 1,
+        },
+        calculate = function(card, effects, context, reps, blueprint_card, reps_i)
+            local config_thing = card.ability.trading.config
+            if context.individual and (context.cardarea == G.play) and (card.area == G.play) and not context.end_of_round then
+                if context.other_card:is_face() and (pseudorandom('business') < G.GAME.probabilities.normal/config_thing.odds) then
+                    table.insert(effects, {
+                        dollars = 2,
+                        card = context.other_card
+                    })
+                end
+            elseif context.does_score then
+                return true
+            end
+        end,
+        loc_vars = function(specific_vars, info_queue, card)
+            local config_thing = specific_vars.collect.config
+            return {G.GAME.probabilities.normal, config_thing.odds}
+        end
+    }
+
+    pc_add_cross_mod_card {
+        key = 'doj_hologram',
+        card = {
+            key = 'doj_hologram', 
+            unlocked = true, 
+            discovered = true, 
+            atlas = 'Joker', 
+            cost = 1, 
+            name = "Hologram", 
+            pos = {x=4,y=12}, 
+            soul_pos = {x=2,y=9},
+            config = {x_mult = 1, mod_x_mult = 0.25}, 
+            base = "H_A",
+            is_joker = true,
+            joker_rarity = 2,
+        },
+        calculate = function(card, effects, context, reps, blueprint_card, reps_i)
+            local config_thing = card.ability.trading.config
+            if context.playing_card_main then
+                if config_thing.x_mult ~= 1 then
+                    table.insert(effects, {
+                        x_mult = config_thing.x_mult,
+                        card = blueprint_card or card
+                    })
+                end
+            elseif context.playing_card_added and ((context.cardarea == G.play) or (context.cardarea == G.hand)) and (not context.blueprint) and context.cards and context.cards[1] then
+                config_thing.x_mult = config_thing.x_mult + #context.cards*config_thing.mod_x_mult
+                card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_xmult', vars = {config_thing.x_mult}}})
+            elseif context.is_face then
+                return true
+            elseif context.does_score then
+                return true
+            end
+        end,
+        loc_vars = function(specific_vars, info_queue, card)
+            local config_thing = specific_vars.collect.config
+            return {config_thing.mod_x_mult, config_thing.x_mult}
+        end
+    }
+
+    pc_add_cross_mod_card {
+        key = 'doj_splash',
+        card = {
+            key = 'doj_splash', 
+            unlocked = true, 
+            discovered = true, 
+            atlas = 'Joker', 
+            cost = 1, 
+            name = "Splash", 
+            pos = {x=6,y=10}, 
+            config = {}, 
+            base = "S_A",
+            is_joker = true,
+            joker_rarity = 1,
+            blueprint_incompat = true,
+        },
+        calculate = function(card, effects, context, reps, blueprint_card, reps_i)
+            local config_thing = card.ability.trading.config
+            if context.does_score then
+                return true
+            end
+        end
+    }
+
+    pc_add_cross_mod_card {
+        key = 'doj_hiker',
+        card = {
+            key = 'doj_hiker', 
+            unlocked = true, 
+            discovered = true, 
+            atlas = 'Joker', 
+            cost = 1, 
+            name = "Hiker", 
+            pos = {x=0,y=11}, 
+            config = {chips = 5}, 
+            base = "S_A",
+            is_joker = true,
+            joker_rarity = 2,
+        },
+        calculate = function(card, effects, context, reps, blueprint_card, reps_i)
+            local config_thing = card.ability.trading.config
+            if context.individual and (context.cardarea == G.play) and (card.area == G.play) and not context.end_of_round then
+                context.other_card.ability.perma_bonus = context.other_card.ability.perma_bonus or 0
+                context.other_card.ability.perma_bonus = context.other_card.ability.perma_bonus + config_thing.chips
+                table.insert(effects, {
+                    extra = {message = localize('k_upgrade_ex'), colour = G.C.CHIPS},
+                    colour = G.C.CHIPS,
+                    card = card
+                })
+            elseif context.is_face then
+                return true
+            elseif context.does_score then
+                return true
+            end
+        end,
+        loc_vars = function(specific_vars, info_queue, card)
+            local config_thing = specific_vars.collect.config
+            return {config_thing.chips}
+        end
+    }
+
+    pc_add_cross_mod_card {
+        key = 'doj_hack',
+        card = {
+            key = 'doj_hack', 
+            unlocked = true, 
+            discovered = true, 
+            atlas = 'Joker', 
+            cost = 1, 
+            name = "Hack", 
+            pos = {x=5,y=2},
+            config = {}, 
+            base = "S_A",
+            is_joker = true,
+            joker_rarity = 2,
+        },
+        calculate = function(card, effects, context, reps, blueprint_card, reps_i)
+            local config_thing = card.ability.trading.config 
+            if context.repetition and (card.area == G.play) and (context.cardarea == G.play) then
+                local special_table = {blueprint_card or card}
+                if reps_i ~= 1 then
+                    for j = 1, #reps[reps_i].cards do
+                        table.insert(special_table, reps[reps_i].cards[j])
+                    end
+                end
+                local id = context.other_card:get_id()
+                if (id == 2) or (id == 3) or (id == 4) or (id == 5) then
+                    table.insert(effects, {
+                        message = localize('k_again_ex'),
+                        repetitions = 1,
+                        cards = special_table
+                    })
+                end
+            elseif context.get_id then
+                return 5
+            elseif context.is_face then
+                return true
+            elseif context.does_score then
+                return true
+            end
+        end,
+    }
+
+    pc_add_cross_mod_card {
+        key = 'doj_ancient',
+        card = {
+            key = 'doj_ancient', 
+            unlocked = true, 
+            discovered = true, 
+            atlas = 'Joker', 
+            cost = 1, 
+            name = "Ancient Joker", 
+            pos = {x=7,y=15},
+            config = {x_mult = 1.5}, 
+            base = "H_A",
+            is_joker = true,
+            joker_rarity = 3,
+        },
+        calculate = function(card, effects, context, reps, blueprint_card, reps_i)
+            local config_thing = card.ability.trading.config 
+            if context.individual and (context.cardarea == G.play) and (card.area == G.play) and not context.end_of_round then
+                local id = context.other_card:get_id()
+                if context.other_card:is_suit(G.GAME.current_round.ancient_card.suit) then
+                    table.insert(effects, {
+                        x_mult = config_thing.x_mult,
+                        card = context.other_card
+                    })
+                end
+            elseif context.is_face then
+                return true
+            elseif context.does_score then
+                return true
+            end
+        end,
+        loc_vars = function(specific_vars, info_queue, card)
+            local config_thing = specific_vars.collect.config
+            return {config_thing.x_mult, localize(G.GAME.current_round.ancient_card.suit, 'suits_singular'), colours = {G.C.SUITS[G.GAME.current_round.ancient_card.suit]}}
+        end
+    }
+
+    pc_add_cross_mod_card {
+        key = 'doj_blackboard',
+        card = {
+            key = 'doj_blackboard', 
+            unlocked = true, 
+            discovered = true, 
+            atlas = 'Joker', 
+            cost = 1, 
+            name = "Blackboard", 
+            pos = {x=2,y=10},
+            config = {x_mult = 3}, 
+            base = "H_A",
+            is_joker = true,
+            joker_rarity = 2,
+        },
+        calculate = function(card, effects, context, reps, blueprint_card, reps_i)
+            local config_thing = card.ability.trading.config 
+            if context.playing_card_main then
+                local black_suits, all_cards = 0, 0
+                for k, v in ipairs(G.hand.cards) do
+                    all_cards = all_cards + 1
+                    if v:is_suit('Clubs', nil, true) or v:is_suit('Spades', nil, true) then
+                        black_suits = black_suits + 1
+                    end
+                end
+                if black_suits == all_cards then
+                    table.insert(effects, {
+                        x_mult = config_thing.x_mult,
+                        card = blueprint_card or card
+                    })
+                end
+            elseif context.is_face then
+                return true
+            elseif context.does_score then
+                return true
+            end
+        end,
+        loc_vars = function(specific_vars, info_queue, card)
+            local config_thing = specific_vars.collect.config
+            return {config_thing.x_mult, localize("Spades", 'suits_plural'), localize("Clubs", 'suits_plural')}
+        end
+    }
+
+    pc_add_cross_mod_card {
+        key = 'doj_castle',
+        card = {
+            key = 'doj_castle', 
+            unlocked = true, 
+            discovered = true, 
+            atlas = 'Joker', 
+            cost = 1, 
+            name = "Castle", 
+            pos = {x=9,y=15},
+            config = {chips = 0, mod_chips = 3}, 
+            base = "S_A",
+            is_joker = true,
+            joker_rarity = 2,
+        },
+        calculate = function(card, effects, context, reps, blueprint_card, reps_i)
+            local config_thing = card.ability.trading.config 
+            if context.playing_card_main then
+                if config_thing.chips then
+                    table.insert(effects, {
+                        chips = config_thing.chips,
+                        card = blueprint_card or card
+                    })
+                end
+            elseif context.discard and context.other_card:is_suit(G.GAME.current_round.castle_card.suit) and not context.other_card.debuff then
+                config_thing.chips = config_thing.chips + config_thing.mod_chips
+                card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize('k_upgrade_ex'), colour = G.C.CHIPS})
+            elseif context.does_score then
+                return true
+            end
+        end,
+        loc_vars = function(specific_vars, info_queue, card)
+            local config_thing = specific_vars.collect.config
+            return {config_thing.mod_chips, localize(G.GAME.current_round.castle_card.suit, 'suits_singular'), config_thing.chips, colours = {G.C.SUITS[G.GAME.current_round.castle_card.suit]}}
+        end
+    }
+
+    pc_add_cross_mod_card {
+        key = 'doj_mad',
+        card = {
+            key = 'doj_mad', 
+            unlocked = true, 
+            discovered = true, 
+            atlas = 'Joker', 
+            cost = 1, 
+            name = "Mad Joker", 
+            pos = {x=4,y=0},
+            config = {mult = 10}, 
+            base = "C_A",
+            is_joker = true,
+            joker_rarity = 1,
+        },
+        calculate = function(card, effects, context, reps, blueprint_card)
+            local config_thing = card.ability.trading.config 
+            if context.playing_card_main then
+                if next(context.poker_hands["Two Pair"]) then
+                    table.insert(effects, {
+                        mult = config_thing.mult,
+                        card = blueprint_card or card
+                    })
+                end
+            elseif context.is_face then
+                return true
+            elseif context.does_score then
+                return true
+            end
+        end,
+        loc_vars = function(specific_vars, info_queue, card)
+            local config_thing = specific_vars.collect.config
+            return {config_thing.mult, localize('Two Pair', 'poker_hands')}
+        end
+    }
+
+    pc_add_cross_mod_card {
+        key = 'doj_trading_card',
+        card = {
+            key = 'doj_trading_card', 
+            unlocked = true, 
+            discovered = true, 
+            atlas = 'Joker', 
+            cost = 1, 
+            name = "Trading Card", 
+            pos = {x=9,y=14},
+            config = {dollars = 3}, 
+            base = "S_A",
+            is_joker = true,
+            joker_rarity = 2,
+        },
+        calculate = function(card, effects, context, reps, blueprint_card, reps_i)
+            local config_thing = card.ability.trading.config 
+            if context.discard and (#context.full_hand == 1) and (G.GAME.current_round.discards_used <= 0) and not context.blueprint then
+                ease_dollars(config_thing.dollars)
+                card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize('$')..config_thing.dollars, delay = 0.45, colour = G.C.MONEY})
+                return {
+                    remove = true,
+                }
+            elseif context.is_face then
+                return true
+            elseif context.does_score then
+                return true
+            end
+        end,
+        loc_vars = function(specific_vars, info_queue, card)
+            local config_thing = specific_vars.collect.config
+            return {config_thing.dollars}
+        end
+    }
+
+    pc_add_cross_mod_card {
+        key = 'doj_crazy',
+        card = {
+            key = 'doj_crazy', 
+            unlocked = true, 
+            discovered = true, 
+            atlas = 'Joker', 
+            cost = 1, 
+            name = "Crazy Joker", 
+            pos = {x=5,y=0},
+            config = {mult = 12}, 
+            base = "C_A",
+            is_joker = true,
+            joker_rarity = 1,
+        },
+        calculate = function(card, effects, context, reps, blueprint_card)
+            local config_thing = card.ability.trading.config 
+            if context.playing_card_main or context.playing_card_hand then
+                if next(context.poker_hands["Straight"]) then
+                    table.insert(effects, {
+                        mult = config_thing.mult,
+                        card = blueprint_card or card
+                    })
+                end
+            elseif context.is_face then
+                return true
+            elseif context.does_score then
+                return true
+            end
+        end,
+        loc_vars = function(specific_vars, info_queue, card)
+            local config_thing = specific_vars.collect.config
+            return {config_thing.mult,  localize('Straight', 'poker_hands')}
+        end
+    }
+
+    pc_add_cross_mod_card {
+        key = 'doj_zany',
+        card = {
+            key = 'doj_zany', 
+            unlocked = true, 
+            discovered = true, 
+            atlas = 'Joker', 
+            cost = 1, 
+            name = "Zany Joker", 
+            pos = {x=3,y=0},
+            config = {mult = 12}, 
+            base = "C_A",
+            is_joker = true,
+            joker_rarity = 1,
+        },
+        calculate = function(card, effects, context, reps, blueprint_card)
+            local config_thing = card.ability.trading.config 
+            if context.playing_card_main then
+                if next(context.poker_hands["Three of a Kind"]) then
+                    table.insert(effects, {
+                        mult = config_thing.mult,
+                        card = blueprint_card or card
+                    })
+                end
+            elseif context.is_face then
+                return true
+            elseif context.does_score then
+                return true
+            end
+        end,
+        loc_vars = function(specific_vars, info_queue, card)
+            local config_thing = specific_vars.collect.config
+            return {config_thing.mult,  localize('Three of a Kind', 'poker_hands')}
+        end
+    }
+
+    pc_add_cross_mod_card {
+        key = 'doj_devious',
+        card = {
+            key = 'doj_devious', 
+            unlocked = true, 
+            discovered = true, 
+            atlas = 'Joker', 
+            cost = 1, 
+            name = "Devious Joker", 
+            pos = {x=3,y=14},
+            config = {chips = 100}, 
+            base = "S_A",
+            is_joker = true,
+            joker_rarity = 1,
+        },
+        calculate = function(card, effects, context, reps, blueprint_card)
+            local config_thing = card.ability.trading.config 
+            if context.playing_card_main or context.playing_card_hand then
+                if next(context.poker_hands["Straight"]) then
+                    table.insert(effects, {
+                        chips = config_thing.chips,
+                        card = blueprint_card or card
+                    })
+                end
+            elseif context.is_face then
+                return true
+            elseif context.does_score then
+                return true
+            end
+        end,
+        loc_vars = function(specific_vars, info_queue, card)
+            local config_thing = specific_vars.collect.config
+            return {config_thing.chips,  localize('Straight', 'poker_hands')}
+        end
+    }
+
+    pc_add_cross_mod_card {
+        key = 'doj_loyalty_card',
+        card = {
+            key = 'doj_loyalty_card', 
+            unlocked = true, 
+            discovered = true, 
+            atlas = 'Joker', 
+            cost = 1, 
+            name = "Loyalty Card", 
+            pos = {x=4,y=2},
+            config = {x_mult = 4, hands = 6, hands_todo = 5}, 
+            base = "H_A",
+            is_joker = true,
+            joker_rarity = 1,
+        },
+        calculate = function(card, effects, context, reps, blueprint_card, reps_i)
+            local config_thing = card.ability.trading.config 
+            if context.playing_card_main then
+                if config_thing.hands_todo == 0 then
+                    table.insert(effects, {
+                        x_mult = config_thing.x_mult,
+                        card = blueprint_card or card
+                    })
+                end
+            elseif context.after and ((context.cardarea == G.play) or (context.cardarea == G.hand)) and not context.blueprint then
+                if config_thing.hands_todo == 0 then
+                    config_thing.hands_todo = config_thing.hands
+                end
+                config_thing.hands_todo = config_thing.hands_todo - 1
+            elseif context.does_score then
+                return true
+            end
+        end,
+        loc_vars = function(specific_vars, info_queue, card)
+            local config_thing = specific_vars.collect.config
+            return {config_thing.x_mult, config_thing.hands, localize{type = 'variable', key = (config_thing.hands_todo == 0 and 'loyalty_active' or 'loyalty_inactive'), vars = {config_thing.hands_todo}}}
+        end
+    }
+
+    pc_add_cross_mod_card {
+        key = 'doj_clever',
+        card = {
+            key = 'doj_clever', 
+            unlocked = true, 
+            discovered = true, 
+            atlas = 'Joker', 
+            cost = 1, 
+            name = "Clever Joker", 
+            pos = {x=2,y=14},
+            config = {chips = 80}, 
+            base = "S_A",
+            is_joker = true,
+            joker_rarity = 1,
+        },
+        calculate = function(card, effects, context, reps, blueprint_card)
+            local config_thing = card.ability.trading.config 
+            if context.playing_card_main then
+                if next(context.poker_hands["Two Pair"]) then
+                    table.insert(effects, {
+                        chips = config_thing.chips,
+                        card = blueprint_card or card
+                    })
+                end
+            elseif context.is_face then
+                return true
+            elseif context.does_score then
+                return true
+            end
+        end,
+        loc_vars = function(specific_vars, info_queue, card)
+            local config_thing = specific_vars.collect.config
+            return {config_thing.chips, localize('Two Pair', 'poker_hands')}
+        end
+    }
+
+    pc_add_cross_mod_card {
+        key = 'doj_even_steven',
+        card = {
+            key = 'doj_even_steven', 
+            unlocked = true, 
+            discovered = true, 
+            atlas = 'Joker', 
+            cost = 1, 
+            name = "Even Steven", 
+            pos = {x=8,y=3},
+            config = {mult = 4}, 
+            base = "C_A",
+            is_joker = true,
+            joker_rarity = 1,
+        },
+        calculate = function(card, effects, context, reps, blueprint_card, reps_i)
+            local config_thing = card.ability.trading.config 
+            if context.individual and (context.cardarea == G.play) and (card.area == G.play) and not context.end_of_round then
+                local id = context.other_card:get_id()
+                if (id == 2) or (id == 4) or (id == 6) or (id == 8) or (id == 10) then
+                    table.insert(effects, {
+                        mult = config_thing.mult,
+                        card = context.other_card
+                    })
+                end
+            elseif context.get_id then
+                return 10
+            elseif context.does_score then
+                return true
+            end
+        end,
+        loc_vars = function(specific_vars, info_queue, card)
+            local config_thing = specific_vars.collect.config
+            return {config_thing.mult}
+        end
+    }
+
+    pc_add_cross_mod_card {
+        key = 'doj_odd_todd',
+        card = {
+            key = 'doj_odd_todd', 
+            unlocked = true, 
+            discovered = true, 
+            atlas = 'Joker', 
+            cost = 1, 
+            name = "Odd Todd", 
+            pos = {x=9,y=3},
+            config = {chips = 31}, 
+            base = "C_A",
+            is_joker = true,
+            joker_rarity = 1,
+        },
+        calculate = function(card, effects, context, reps, blueprint_card, reps_i)
+            local config_thing = card.ability.trading.config 
+            if context.individual and (context.cardarea == G.play) and (card.area == G.play) and not context.end_of_round then
+                local id = context.other_card:get_id()
+                if (id == 3) or (id == 5) or (id == 7) or (id == 9) or (id == 14) then
+                    table.insert(effects, {
+                        chips = config_thing.chips,
+                        card = context.other_card
+                    })
+                end
+            elseif context.get_id then
+                return 14
+            elseif context.does_score then
+                return true
+            end
+        end,
+        loc_vars = function(specific_vars, info_queue, card)
+            local config_thing = specific_vars.collect.config
+            return {config_thing.chips}
+        end
+    }
+
+    pc_add_cross_mod_card {
+        key = 'doj_todo_list',
+        card = {
+            key = 'doj_todo_list', 
+            unlocked = true, 
+            discovered = true, 
+            atlas = 'Joker', 
+            cost = 1, 
+            name = "To Do List", 
+            pos = {x=4,y=11},
+            config = {dollars = 4, poker_hand = "High Card"}, 
+            base = "D_A",
+            is_joker = true,
+            joker_rarity = 1,
+        },
+        calculate = function(card, effects, context, reps, blueprint_card, reps_i)
+            local config_thing = card.ability.trading.config 
+            if context.before and (context.cardarea == G.play) then
+                ease_dollars(config_thing.dollars)
+                card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize('$')..config_thing.dollars, colour = G.C.MONEY})
+            elseif context.total_end_of_round then
+                local _poker_hands = {}
+                for k, v in pairs(G.GAME.hands) do
+                    if v.visible and k ~= config_thing.poker_hand then _poker_hands[#_poker_hands+1] = k end
+                end
+                config_thing.poker_hand = pseudorandom_element(_poker_hands, pseudoseed('to_do'))
+                card_eval_status_text(blueprint_card or card, 'extra', nil, nil, nil, {message = localize('k_reset')})
+            elseif context.does_score then
+                return true
+            end
+        end,
+        loc_vars = function(specific_vars, info_queue, card)
+            local config_thing = specific_vars.collect.config
+            return {config_thing.dollars, localize(config_thing.poker_hand, 'poker_hands')}
+        end
+    }
+
+    pc_add_cross_mod_card {
+        key = 'doj_erosion',
+        card = {
+            key = 'doj_erosion', 
+            unlocked = true, 
+            discovered = true, 
+            atlas = 'Joker', 
+            cost = 1, 
+            name = "Erosion", 
+            pos = {x=5,y=13},
+            config = {mult = 4}, 
+            base = "C_A",
+            is_joker = true,
+            joker_rarity = 1,
+        },
+        calculate = function(card, effects, context, reps, blueprint_card, reps_i)
+            local config_thing = card.ability.trading.config 
+            if context.playing_card_main then
+                local total_mult = math.max(0,config_thing.mult*(G.playing_cards and (G.GAME.starting_deck_size - #G.playing_cards) or 0))
+                if total_mult > 0 then
+                    table.insert(effects, {
+                        mult = total_mult,
+                        card = blueprint_card or card
+                    })
+                end
+            elseif context.does_score then
+                return true
+            end
+        end,
+        loc_vars = function(specific_vars, info_queue, card)
+            local config_thing = specific_vars.collect.config
+            return {config_thing.mult, math.max(0,config_thing.mult*(G.playing_cards and (G.GAME.starting_deck_size - #G.playing_cards) or 0)), G.GAME.starting_deck_size}
+        end
+    }
+
+    pc_add_cross_mod_card {
+        key = 'doj_hallucination',
+        card = {
+            key = 'doj_hallucination', 
+            unlocked = true, 
+            discovered = true, 
+            atlas = 'Joker', 
+            cost = 1, 
+            name = "Hallucination", 
+            pos = {x=9,y=13}, 
+            config = {odds = 2}, 
+            base = "S_A",
+            is_joker = true,
+            joker_rarity = 1,
+            blueprint_incompat = true,
+        },
+        calculate = function(card, effects, context, reps, blueprint_card, reps_i)
+            local config_thing = card.ability.trading.config
+            if context.open_booster then
+                if (#G.consumeables.cards + G.GAME.consumeable_buffer < G.consumeables.config.card_limit) and (pseudorandom('halu'..G.GAME.round_resets.ante) < G.GAME.probabilities.normal/config_thing.odds) then
+                    G.GAME.consumeable_buffer = G.GAME.consumeable_buffer + 1
+                    G.E_MANAGER:add_event(Event({
+                        trigger = 'before',
+                        delay = 0.0,
+                        func = (function()
+                                local card = create_card('Tarot',G.consumeables, nil, nil, nil, nil, nil, 'hal')
+                                card:add_to_deck()
+                                G.consumeables:emplace(card)
+                                G.GAME.consumeable_buffer = 0
+                            return true
+                        end)}))
+                    card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize('k_plus_tarot'), colour = G.C.PURPLE})
+                end
+            elseif context.is_face then
+                return true
+            elseif context.does_score then
+                return true
+            end
+        end,
+        loc_vars = function(specific_vars, info_queue, card)
+            local config_thing = specific_vars.collect.config
+            return {G.GAME.probabilities.normal, config_thing.odds}
+        end
+        
+    }
+
     doj_joker_pools = {{}, {}, {}, {}}
     for i, j in pairs(G.P_TRADING) do
         if j.is_joker then
             table.insert(doj_joker_pools[j.joker_rarity], j.key)
         end
     end
+    for i, j in ipairs(doj_joker_pools) do
+        table.sort(j)
+    end
 end
 
-function get_joker_key()
-    local rarity_pick = pseudorandom('doj_joker_rarity_pick')
+function get_joker_key(rarity)
+    local rarity_pick = rarity or pseudorandom(pseudoseed('doj_joker_rarity_pick'))
     local pool = {}
     if rarity_pick < 0.7 then
         pool = doj_joker_pools[1]
@@ -3485,7 +4489,39 @@ SMODS.Back {
                 for i = 1, 40 do
                     local key = G.P_TRADING[get_joker_key()]
                     local _card = Card(G.deck.T.x, G.deck.T.y, G.CARD_W, G.CARD_H, G.P_CARDS[key.base], G.P_CENTERS['m_pc_trading'], {playing_card = G.playing_card})
-                    _card.ability.trading = copy_table(key)
+                    _card.force_trading = key.key
+                    _card:set_ability(G.P_CENTERS["m_pc_trading"])
+                    _card:set_sprites(_card.config.center)
+                    G.deck:emplace(_card)
+                    table.insert(G.playing_cards, _card)
+                end
+            return true
+            end
+        }))
+    end
+}
+
+SMODS.Back {
+    key = 'final_draft',
+    loc_txt = {
+        name = "Final Draft Deck",
+        text = {
+            "Start with {C:attention}5{}",
+            "extra {C:red}Rare{} {C:dark_edition}Jokers{}",
+            "in {C:attention}deck{}"
+        }
+    },
+    atlas = "decks",
+    pos = {x = 1, y = 0},
+    name = "Final Draft Deck",
+    apply = function(self)
+        G.E_MANAGER:add_event(Event({
+            func = function()
+                for i = 1, 5 do
+                    local key = G.P_TRADING[get_joker_key(0.99)]
+                    local _card = Card(G.deck.T.x, G.deck.T.y, G.CARD_W, G.CARD_H, G.P_CARDS[key.base], G.P_CENTERS['m_pc_trading'], {playing_card = G.playing_card})
+                    _card.force_trading = key.key
+                    _card:set_ability(G.P_CENTERS["m_pc_trading"])
                     _card:set_sprites(_card.config.center)
                     G.deck:emplace(_card)
                     table.insert(G.playing_cards, _card)
@@ -3554,13 +4590,18 @@ SMODS.Booster {
     create_card = function(self, card)
         local key = G.P_TRADING[get_joker_key()]
         local _card = Card(G.deck.T.x, G.deck.T.y, G.CARD_W, G.CARD_H, G.P_CARDS[key.base], G.P_CENTERS['m_pc_trading'], {playing_card = G.playing_card})
-        _card.ability.trading = copy_table(key)
+        _card.force_trading = key.key
+        _card:set_ability(G.P_CENTERS["m_pc_trading"])
         _card:set_sprites(_card.config.center)
         local edition = poll_edition('trading_edition'..G.GAME.round_resets.ante, 1, true)
         _card:set_edition(edition)
         _card:set_seal(SMODS.poll_seal({mod = 3}))
         return _card
-    end
+    end,
+    ease_background_colour = function(self)
+        ease_colour(G.C.DYN_UI.MAIN, HEX('bebebe'))
+        ease_background_colour{new_colour = HEX('bebebe'), special_colour = G.C.BLACK, contrast = 2}
+    end,
 }
 
 local old_floating_sprite = SMODS.DrawSteps['floating_sprite'].func
@@ -3571,7 +4612,7 @@ SMODS.DrawSteps['floating_sprite'].func = function(self)
 
         if type(self.ability.trading.soul_pos.draw) == 'function' then
             self.ability.trading.soul_pos.draw(self, scale_mod, rotate_mod)
-        elseif self.ability.name == 'Hologram' then
+        elseif self.ability.trading and (self.ability.trading.name == 'Hologram') then
             self.hover_tilt = self.hover_tilt*1.5
             self.children.floating_sprite:draw_shader('hologram', nil, self.ARGS.send_to_shader, nil, self.children.center, 2*scale_mod, 2*rotate_mod)
             self.hover_tilt = self.hover_tilt/1.5
@@ -3590,6 +4631,22 @@ SMODS.DrawSteps['floating_sprite'].func = function(self)
         end
     end
     old_floating_sprite(self)
+end
+
+local old_always_scores = SMODS.always_scores
+function SMODS.always_scores(card)
+    local splashed = false
+    for i = 1, #G.play.cards do
+        local card = G.play.cards[i]
+            if card and card.ability and card.ability.trading and (card.ability.trading.name == "Splash") and not card.debuff then
+                splashed = true
+            end
+    end
+    if splashed then
+        return true
+    else
+        return old_always_scores(card)
+    end
 end
 
 ----------------------------------------------

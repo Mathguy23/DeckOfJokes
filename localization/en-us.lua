@@ -401,6 +401,136 @@ return {
                     "Wily Joker"
                 }
             },
+            doj_oops = {
+                text = {
+                    "Oops! All 6s"
+                }
+            },
+            doj_vampire = {
+                text = {
+                    "Vampire"
+                }
+            },
+            doj_shortcut = {
+                text = {
+                    "Shortcut"
+                }
+            },
+            doj_walkie_talkie = {
+                text = {
+                    "Walkie Talkie"
+                }
+            },
+            doj_baseball = {
+                text = {
+                    "Baseball Card"
+                }
+            },
+            doj_gift_card = {
+                text = {
+                    "Gift Card"
+                }
+            },
+            doj_business = {
+                text = {
+                    "Business Card"
+                }
+            },
+            doj_hologram = {
+                text = {
+                    "Hologram"
+                }
+            },
+            doj_splash = {
+                text = {
+                    "Splash"
+                }
+            },
+            doj_hiker = {
+                text = {
+                    "Hiker"
+                }
+            },
+            doj_hack = {
+                text = {
+                    "Hack"
+                }
+            },
+            doj_ancient = {
+                text = {
+                    "Ancient Joker"
+                }
+            },
+            doj_blackboard = {
+                text = {
+                    "Blackboard"
+                }
+            },
+            doj_castle = {
+                text = {
+                    "Castle"
+                }
+            },
+            doj_mad = {
+                text = {
+                    "Mad Joker"
+                }
+            },
+            doj_trading_card = {
+                text = {
+                    "Trading Card"
+                }
+            },
+            doj_crazy = {
+                text = {
+                    "Crazy Joker"
+                }
+            },
+            doj_zany = {
+                text = {
+                    "Zany Joker"
+                }
+            },
+            doj_devious = {
+                text = {
+                    "Devious Joker"
+                }
+            },
+            doj_loyalty_card = {
+                text = {
+                    "Loyalty Card"
+                }
+            },
+            doj_clever = {
+                text = {
+                    "Clever Joker"
+                }
+            },
+            doj_even_steven = {
+                text = {
+                    "Even Steven"
+                }
+            },
+            doj_odd_todd = {
+                text = {
+                    "Odd Todd"
+                }
+            },
+            doj_todo_list = {
+                text = {
+                    "To Do List"
+                }
+            },
+            doj_erosion = {
+                text = {
+                    "Erosion"
+                }
+            },
+            doj_hallucination = {
+                text = {
+                    "Hallucination"
+                }
+            },
         },
         CustomCard = {
             doj_joker = {
@@ -454,7 +584,7 @@ return {
             },
             doj_fibonacci = {
                 text = {
-                    "{C:attention}Always Scores{}",
+                    "{C:attention}Always Scores{}, {C:attention}Ace{}",
                     "Each played {C:attention}Ace{},",
                     "{C:attention}2{}, {C:attention}3{}, {C:attention}5{}, or {C:attention}8{} gives",
                     "{C:mult}+#1#{} Mult when scored",
@@ -686,7 +816,7 @@ return {
             doj_campfire = {
                 text = {
                     "{C:attention}Always Scores{}",
-                    "This Joker gains {X:mult,C:white}X#1#{} Mult",
+                    "This Card gains {X:mult,C:white}X#1#{} Mult",
                     "for each card {C:attention}sold{}, resets",
                     "when {C:attention}Boss Blind{} is defeated",
                     "{C:inactive}(Currently {X:mult,C:white} X#2# {C:inactive} Mult)"
@@ -744,9 +874,9 @@ return {
             doj_midas_mask = {
                 text = {
                     "{C:attention}Always Scores{}, {C:attention}Face Card{}",
-                    "All played {C:attention}face{} cards",
-                    "become {C:attention}Gold{} cards",
-                    "when scored",
+                    "All other played {C:attention}face{}",
+                    "cards become {C:attention}Gold{}",
+                    "cards when scored",
                 }
             },
             doj_stone = {
@@ -932,7 +1062,7 @@ return {
             doj_obelisk = {
                 text = {
                     "{C:attention}Always Scores{}",
-                    "This Joker gains {X:mult,C:white} X#1# {} Mult",
+                    "This Card gains {X:mult,C:white} X#1# {} Mult",
                     "per {C:attention}consecutive{} hand played",
                     "without playing your",
                     "most played {C:attention}poker hand",
@@ -950,9 +1080,9 @@ return {
             doj_crafty = {
                 text = {
                     "{C:attention}Always Scores{}, {C:attention}Face Card{}",
-                    "{C:chips}+#1#{} Chips if played",
-                    "hand contains",
-                    "a {C:attention}#2#"
+                    "{C:blue}+#1#{} Chips if played hand",
+                    "contains a {C:attention}Flush{} while this card",
+                    "stays in hand or is played"
                 }
             },
             doj_to_the_moon = {
@@ -981,7 +1111,7 @@ return {
             doj_hit_the_road = {
                 text = {
                     "{C:attention}Always Scores{}, {C:attention}Jack{}, {C:attention}Face Card{}",
-                    "This Joker gains {X:mult,C:white} X#1# {} Mult",
+                    "This Card gains {X:mult,C:white} X#1# {} Mult",
                     "for every {C:attention}Jack{}",
                     "discarded this round",
                     "{C:inactive}(Currently {X:mult,C:white} X#2# {C:inactive} Mult)"
@@ -1069,6 +1199,226 @@ return {
                     "{C:chips}+#1#{} Chips if played",
                     "hand contains",
                     "a {C:attention}#2#"
+                }
+            },
+            doj_oops = {
+                text = {
+                    "{C:attention}Always Scores{}",
+                    "Doubles all {C:attention}listed",
+                    "{C:green,E:1,S:1.1}probabilities",
+                    "{C:inactive}(ex: {C:green}1 in 3{C:inactive} -> {C:green}2 in 3{C:inactive})"
+                }
+            },
+            doj_vampire = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "This Card gains {X:mult,C:white} X#1# {} Mult",
+                    "per other scoring {C:attention}Enhanced card{} played,",
+                    "removes card {C:attention}Enhancement",
+                    "{C:inactive}(Currently {X:mult,C:white} X#2# {C:inactive} Mult)"
+                }
+            },
+            doj_shortcut = {
+                text = {
+                    "{C:attention}Always Scores{}",
+                    "Allows {C:attention}Straights{} to be",
+                    "made with gaps of {C:attention}1 rank",
+                    "while this card is played",
+                    "or stays in hand",
+                    "{C:inactive}(ex: {C:attention}10 8 6 5 3{C:inactive})"
+                }
+            },
+            doj_walkie_talkie = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}10{}",
+                    "Each played {C:attention}10{} or {C:attention}4",
+                    "gives {C:chips}+#1#{} Chips and", 
+                    "{C:mult}+#2#{} Mult when scored"
+                }
+            },
+            doj_baseball = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "{C:green}Uncommon{} Jokers",
+                    "each give {X:mult,C:white} X#1# {} Mult",
+                }
+            },
+            doj_gift_card = {
+                text = {
+                    "{C:attention}Always Scores{}",
+                    "Add {C:money}$#1#{} of {C:attention}sell value",
+                    "to every {C:attention}Joker{} and",
+                    "{C:attention}Consumable{} card at",
+                    "end of round while this",
+                    "card stays in hand"
+                }
+            },
+            doj_business = {
+                text = {
+                    "{C:attention}Always Scores{}",
+                    "Played {C:attention}face{} cards have",
+                    "a {C:green}#1# in #2#{} chance to",
+                    "give {C:money}$2{} when scored"
+                }
+            },
+            doj_hologram = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "This Card gains {X:mult,C:white} X#1# {} Mult",
+                    "every time a {C:attention}playing card{}",
+                    "is added to your deck while this",
+                    "card stays in hand",
+                    "{C:inactive}(Currently {X:mult,C:white} X#2# {C:inactive} Mult)"
+                }
+            },
+            doj_splash = {
+                text = {
+                    "{C:attention}Always Scores{}",
+                    "Every {C:attention}played card",
+                    "counts in scoring"
+                }
+            },
+            doj_hiker = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "Every played {C:attention}card{}",
+                    "permanently gains",
+                    "{C:chips}+#1#{} Chips when scored"
+                }
+            },
+            doj_hack = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}5{}, {C:attention}Face Card{}",
+                    "Retrigger",
+                    "each played",
+                    "{C:attention}2{}, {C:attention}3{}, {C:attention}4{}, or {C:attention}5{}",
+                }
+            },
+            doj_ancient = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "Each played card with",
+                    "{V:1}#2#{} suit gives",
+                    "{X:mult,C:white} X#1# {} Mult when scored,",
+                    "{s:0.8}suit changes at end of round"
+                }
+            },
+            doj_blackboard = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "{X:red,C:white} X#1# {} Mult if all",
+                    "cards held in hand",
+                    "are {C:spades}#2#{} or {C:clubs}#3#{}"
+                }
+            },
+            doj_castle = {
+                text = {
+                    "{C:attention}Always Scores{}",
+                    "This Card gains {C:chips}+#1#{} Chips",
+                    "per discarded {V:1}#2#{} card,",
+                    "suit changes every round",
+                    "{C:inactive}(Currently {C:chips}+#3#{C:inactive} Chips)"
+                }
+            },
+            doj_mad = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "{C:red}+#1#{} Mult if played",
+                    "hand contains",
+                    "a {C:attention}#2#"
+                }
+            },
+            doj_trading_card = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "If {C:attention}first discard{} of round",
+                    "has only {C:attention}1{} card, destroy",
+                    "it and earn {C:money}$#1#"
+                }
+            },
+            doj_crazy = {
+                text = {
+                   "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "{C:red}+#1#{} Mult if played hand",
+                    "contains a {C:attention}#2#{} while this card",
+                    "stays in hand or is played"
+                }
+            },
+            doj_zany = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "{C:red}+#1#{} Mult if played",
+                    "hand contains",
+                    "a {C:attention}#2#{}"
+                }
+            },
+            doj_devious = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "{C:blue}+#1#{} Chips if played",
+                    "hand contains",
+                    "a {C:attention}#2#{}"
+                }
+            },
+            doj_loyalty_card = {
+                text = {
+                    "{C:attention}Always Scores{}",
+                    "{X:red,C:white} X#1# {} Mult every",
+                    "{C:attention}#2#{} hands played",
+                    "{C:inactive}#3#"
+                }
+            },
+            doj_clever = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "{C:blue}+#1#{} Chips if played",
+                    "hand contains",
+                    "a {C:attention}#2#{}"
+                }
+            },
+            doj_even_steven = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}10{}, {C:attention}Face Card{}",
+                    "Played cards with",
+                    "{C:attention}even{} rank give",
+                    "{C:mult}+#1#{} Mult when scored",
+                    "{C:inactive}(10, 8, 6, 4, 2)"
+                }
+            },
+            doj_odd_todd = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Ace{}, {C:attention}Face Card{}",
+                    "Played cards with",
+                    "{C:attention}odd{} rank give",
+                    "{C:chips}+#1#{} Chips when scored",
+                    "{C:inactive}(A, 9, 7, 5, 3)"
+                }
+            },
+            doj_todo_list = {
+                text = {
+                    "{C:attention}Always Scores{}",
+                    "Earn {C:money}$#1#{} if {C:attention}poker hand{}",
+                    "is a {C:attention}#2#{},",
+                    "poker hand changes",
+                    "at end of round"
+                }
+            },
+            doj_erosion = {
+                text = {
+                    "{C:attention}Always Scores{}",
+                    "{C:red}+#1#{} Mult for each",
+                    "card below {C:attention}#3#{}",
+                    "in your full deck",
+                    "{C:inactive}(Currently {C:red}+#2#{C:inactive} Mult)"
+                }
+            },
+            doj_hallucination = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "{C:green}#1# in #2#{} chance to create",
+                    "a {C:tarot}Tarot{} card when any",
+                    "{C:attention}Booster Pack{} is opened",
+                    "{C:inactive}(Must have room)"
                 }
             },
         },

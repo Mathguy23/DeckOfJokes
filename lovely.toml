@@ -216,7 +216,7 @@ match_indent = true
 [[patches]]
 [patches.pattern]
 target = 'functions/common_events.lua'
-pattern = '''if not strip_edition then '''
+pattern = '''if not strip_edition then'''
 position = 'before'
 payload = '''local hand_size2 = not new_card.debuff and new_card.ability and new_card.ability.trading and new_card.ability.trading.config.doj_hand_size or 0
 local discards2 = not new_card.debuff and new_card.ability and new_card.ability.trading and new_card.ability.trading.config.doj_discards or 0
@@ -229,6 +229,28 @@ if new_card.area == G.hand then
     if discards1 ~= discards2 then
         local change = discards2 - discards1
         ease_discard(math.max(-G.GAME.current_round.discards_left, change))
+    end
+end'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = 'game.lua'
+pattern = '''if G.GAME.blind and G.boss_throw_hand and self.STATE == self.STATES.SELECTING_HAND then'''
+position = 'before'
+payload = '''G.GAME.doj_oopsness = G.GAME.doj_oopsness or 1
+local oops_count = 1
+if G.play and G.play.cards then
+    for i = 1, #G.play.cards do
+        local card = G.play.cards[i]
+        if card and card.ability and card.ability.trading and (card.ability.trading.name == "Oops! All 6s") and not card.debuff then
+            oops_count = oops_count * 2
+        end
+    end
+    if oops_count ~= G.GAME.doj_oopsness then
+        local change = oops_count / G.GAME.doj_oopsness
+        G.GAME.doj_oopsness = oops_count
+        G.GAME.probabilities.normal = G.GAME.probabilities.normal * change
     end
 end'''
 match_indent = true
