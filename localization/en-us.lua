@@ -531,6 +531,106 @@ return {
                     "Hallucination"
                 }
             },
+            doj_glass = {
+                text = {
+                    "Glass Joker"
+                }
+            },
+            doj_satellite = {
+                text = {
+                    "Satellite"
+                }
+            },
+            doj_scholar = {
+                text = {
+                    "Scholar"
+                }
+            },
+            doj_ride_the_bus = {
+                text = {
+                    "Ride the Bus"
+                }
+            },
+            doj_yorick = {
+                text = {
+                    "Yorick"
+                }
+            },
+            doj_superposition = {
+                text = {
+                    "Superposition"
+                }
+            },
+            doj_ramen = {
+                text = {
+                    "Ramen"
+                }
+            },
+            doj_abstract = {
+                text = {
+                    "Abstract Joker"
+                }
+            },
+            doj_rough_gem = {
+                text = {
+                    "Rough Gem"
+                }
+            },
+            doj_stuntman = {
+                text = {
+                    "Stuntman"
+                }
+            },
+            doj_lusty = {
+                text = {
+                    "Lusty Joker"
+                }
+            },
+            doj_blue_joker = {
+                text = {
+                    "Blue Joker"
+                }
+            },
+            doj_family = {
+                text = {
+                    "The Family"
+                }
+            },
+            doj_order = {
+                text = {
+                    "The Order"
+                }
+            },
+            doj_flash = {
+                text = {
+                    "Flash Card"
+                }
+            },
+            doj_smiley_face = {
+                text = {
+                    "Smiley Face"
+                }
+            },
+            doj_bootstraps = {
+                text = {
+                    "Bootstraps"
+                }
+            },
+            doj_faceless = {
+                text = {
+                    "Faceless Joker"
+                }
+            },
+            doj_reserved_parking = {
+                text = {
+                    "Reserved Parking"
+                }
+            },
+            doj_onyx_agate = {
+                text = {
+                    "Onyx Agate"
+                }
+            },
         },
         CustomCard = {
             doj_joker = {
@@ -1419,6 +1519,175 @@ return {
                     "a {C:tarot}Tarot{} card when any",
                     "{C:attention}Booster Pack{} is opened",
                     "{C:inactive}(Must have room)"
+                }
+            },
+            doj_glass = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "This Joker gains {X:mult,C:white} X#1# {} Mult",
+                    "for every {C:attention}Glass Card",
+                    "that is destroyed",
+                    "{C:inactive}(Currently {X:mult,C:white} X#2# {C:inactive} Mult)"
+                }
+            },
+            doj_satellite = {
+                text = {
+                    "{C:attention}Always Scores{}",
+                    "Earn {C:money}$#1#{} at end of",
+                    "round per unique {C:planet}Planet",
+                    "card used this run",
+                    "{C:inactive}(Currently {C:money}$#2#{C:inactive})"
+                }
+            },
+            doj_scholar = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Ace{}, {C:attention}Face Card{}",
+                    "Played {C:attention}Aces{}",
+                    "give {C:chips}+#2#{} Chips",
+                    "and {C:mult}+#1#{} Mult",
+                    "when scored"
+                }
+            },
+            doj_ride_the_bus = {
+                text = {
+                    "{C:attention}Always Scores{}",
+                    "This Card gains {C:mult}+#1#{} Mult",
+                    "per {C:attention}consecutive{} hand",
+                    "played without a",
+                    "scoring {C:attention}face{} card",
+                    "{C:inactive}(Currently {C:mult}+#2#{C:inactive} Mult)"
+                }
+            },
+            doj_yorick = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "This Joker gains",
+                    "{X:mult,C:white} X#1# {} Mult every {C:attention}#2#{C:inactive} [#3#]{}",
+                    "cards discarded",
+                    "{C:inactive}(Currently {X:mult,C:white} X#4# {C:inactive} Mult)"
+                }
+            },
+            doj_superposition = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Ace{}, {C:attention}Face Card{}",
+                    "Create a {C:tarot}Tarot{} card if",
+                    "poker hand contains an",
+                    "{C:attention}Ace{} and a {C:attention}Straight{}",
+                    "{C:inactive}(Must have room)"
+                }
+            },
+            doj_ramen = {
+                text = {
+                    "{C:attention}Always Scores{}",
+                    "{X:mult,C:white} X#1# {} Mult,",
+                    "loses {X:mult,C:white} X#2# {} Mult",
+                    "per {C:attention}card{} discarded",
+                }
+            },
+            doj_abstract = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "{C:mult}+#1#{} Mult for",
+                    "each {C:attention}Joker{} card",
+                    "{C:inactive}(Currently {C:red}+#2#{C:inactive} Mult)"
+                }
+            },
+            doj_rough_gem = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:diamonds}Diamonds{}",
+                    "Played cards with",
+                    "{C:diamonds}Diamond{} suit earn",
+                    "{C:money}$#1#{} when scored", 
+                }
+            },
+            doj_stuntman = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "{C:chips}+#1#{} Chips,",
+                    "{C:attention}-#2#{} hand size"
+                }
+            },
+            doj_lusty = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:hearts}Hearts{}, {C:attention}Face Card{}",
+                    "Played cards with",
+                    "{C:hearts}#2#{} suit give",
+                    "{C:mult}+#1#{} Mult when scored", 
+                }
+            },
+            doj_blue_joker = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "{C:chips}+#1#{} Chips for each",
+                    "remaining card in {C:attention}deck",
+                    "{C:inactive}(Currently {C:chips}+#2#{C:inactive} Chips)"
+                }
+            },
+            doj_family = {
+                text = {
+                    "{C:attention}Always Scores{}",
+                    "{X:mult,C:white} X#1# {} Mult if played",
+                    "hand contains",
+                    "a {C:attention}#2#"
+                }
+            },
+            doj_order = {
+                text = {
+                    "{C:attention}Always Scores{}",
+                    "{X:mult,C:white} X#1# {} Mult if played",
+                    "hand contains a {C:attention}#2#",
+                    "while this card is played",
+                    "or stays in hand"
+                }
+            },
+            doj_flash = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "This Joker gains {C:mult}+#1#{} Mult",
+                    "per {C:attention}reroll{} in the shop",
+                    "{C:inactive}(Currently {C:mult}+#2#{C:inactive} Mult)"
+                }
+            },
+            doj_smiley_face = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "Played {C:attention}face{} cards",
+                    "give {C:mult}+#1#{} Mult",
+                    "when scored"
+                }
+            },
+            doj_bootstraps = {
+                text = {
+                    "{C:attention}Always Scores{}",
+                    "{C:mult}+#1#{} Mult for every",
+                    "{C:money}$#2#{} you have",
+                    "{C:inactive}(Currently {C:mult}+#3#{C:inactive} Mult)"
+                }
+            },
+            doj_faceless = {
+                text = {
+                    "{C:attention}Always Scores{}",
+                    "Earn {C:money}$#1#{} if {C:attention}#2#{} or",
+                    "more {C:attention}face cards{}",
+                    "are discarded",
+                    "at the same time"
+                }
+            },
+            doj_reserved_parking = {
+                text = {
+                    "{C:attention}Always Scores{}",
+                    "Each {C:attention}face{} card",
+                    "held in hand has",
+                    "a {C:green}#2# in #3#{} chance",
+                    "to give {C:money}$#1#{}",
+                }
+            },
+            doj_onyx_agate = {
+                text = {
+                    "{C:attention}Always Scores{}",
+                    "Played cards with",
+                    "{C:clubs}Club{} suit give",
+                    "{C:mult}+#1#{} Mult when scored", 
                 }
             },
         },
