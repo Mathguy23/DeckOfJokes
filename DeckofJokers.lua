@@ -5,7 +5,7 @@
 --- MOD_AUTHOR: [mathguy]
 --- MOD_DESCRIPTION: Deck of Jokers
 --- DEPENDENCIES: [CustomCards]
---- VERSION: 1.0.6
+--- VERSION: 1.0.6a
 ----------------------------------------------
 ------------MOD CODE -------------------------
 
@@ -88,7 +88,7 @@ function Card:set_ability(center, initial, delay_sprites)
     old_ability(self, center, initial, delay_sprites)
     local hand_size2 = not self.debuff and self.ability and self.ability.trading and self.ability.trading.config.doj_hand_size or 0
     local discards2 = not self.debuff and self.ability and self.ability.trading and self.ability.trading.config.doj_discards or 0
-    if self.area == G.hand then
+    if self.area == G.hand and (G.hand ~= nil) then
         if hand_size1 ~= hand_size2 then
             local change = hand_size2 - hand_size1
             G.hand.config.real_card_limit = (G.hand.config.real_card_limit or G.hand.config.card_limit) + change
