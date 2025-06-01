@@ -631,6 +631,126 @@ return {
                     "Onyx Agate"
                 }
             },
+            doj_photograph = {
+                text = {
+                    "Photograph"
+                }
+            },
+            doj_banner = {
+                text = {
+                    "Banner"
+                }
+            },
+            doj_half = {
+                text = {
+                    "Half Joker"
+                }
+            },
+            doj_space = {
+                text = {
+                    "Space Joker"
+                }
+            },
+            doj_arrowhead = {
+                text = {
+                    "Arrowhead"
+                }
+            },
+            doj_trio = {
+                text = {
+                    "The Trio"
+                }
+            },
+            doj_greedy = {
+                text = {
+                    "Greedy Joker"
+                }
+            },
+            doj_wrathful = {
+                text = {
+                    "Wrathful Joker"
+                }
+            },
+            doj_gluttonous = {
+                text = {
+                    "Gluttonous Joker"
+                }
+            },
+            doj_acrobat = {
+                text = {
+                    "Acrobat"
+                }
+            },
+            doj_steel_joker = {
+                text = {
+                    "Steel Joker"
+                }
+            },
+            doj_cloud_9 = {
+                text = {
+                    "Cloud 9"
+                }
+            },
+            doj_fortune_teller = {
+                text = {
+                    "Fortune Teller"
+                }
+            },
+            doj_bull = {
+                text = {
+                    "Bull"
+                }
+            },
+            doj_trousers = {
+                text = {
+                    "Spare Trousers"
+                }
+            },
+            doj_red_card = {
+                text = {
+                    "Red Card"
+                }
+            },
+            doj_square = {
+                text = {
+                    "Square Joker"
+                }
+            },
+            doj_troubadour = {
+                text = {
+                    "Troubadour"
+                }
+            },
+            doj_misprint = {
+                text = {
+                    "Misprint",
+                }
+            },
+            doj_delayed_grat = {
+                text = {
+                    "Delayed Gratification",
+                }
+            },
+            doj_seltzer = {
+                text = {
+                    "Seltzer",
+                }
+            },
+            doj_drunkard = {
+                text = {
+                    "Drunkard",
+                }
+            },
+            doj_sock_and_buskin = {
+                text = {
+                    "Sock and Buskin",
+                }
+            },
+            doj_tribe = {
+                text = {
+                    "The Tribe",
+                }
+            },
         },
         CustomCard = {
             doj_joker = {
@@ -1684,10 +1804,200 @@ return {
             },
             doj_onyx_agate = {
                 text = {
-                    "{C:attention}Always Scores{}",
+                    "{C:attention}Always Scores{}, {C:clubs}Clubs{}",
                     "Played cards with",
                     "{C:clubs}Club{} suit give",
                     "{C:mult}+#1#{} Mult when scored", 
+                }
+            },
+            doj_photograph = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "First played {C:attention}face",
+                    "card gives {X:mult,C:white} X#1# {} Mult",
+                    "when scored",
+                }
+            },
+            doj_banner = {
+                text = {
+                    "{C:attention}Always Scores{}",
+                    "{C:chips}+#1#{} Chips for",
+                    "each remaining",
+                    "{C:attention}discard"
+                }
+            },
+            doj_half = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "{C:red}+#1#{} Mult if played",
+                    "hand contains",
+                    "{C:attention}#2#{} or fewer cards"
+                }
+            },
+            doj_space = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "{C:green}#1# in #2#{} chance to",
+                    "upgrade level of",
+                    "played {C:attention}poker hand{}"
+                }
+            },
+            doj_arrowhead = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:spades}Spades{}",
+                    "Played cards with",
+                    "{C:spades}Spade{} suit give",
+                    "{C:chips}+#1#{} Chips when scored",
+                }
+            },
+            doj_trio = {
+                text = {
+                    "{C:attention}Always Scores{}",
+                    "{X:mult,C:white} X#1# {} Mult if played",
+                    "hand contains",
+                    "a {C:attention}#2#"
+                }
+            },
+            doj_greedy = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:diamonds}Diamonds{}, {C:attention}Face Card{}",
+                    "Played cards with",
+                    "{C:diamonds}#2#{} suit give",
+                    "{C:mult}+#1#{} Mult when scored", 
+                }
+            },
+            doj_wrathful = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:spades}Spades{}, {C:attention}Face Card{}",
+                    "Played cards with",
+                    "{C:spades}#2#{} suit give",
+                    "{C:mult}+#1#{} Mult when scored", 
+                }
+            },
+            doj_gluttonous = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:clubs}Clubs{}, {C:attention}Face Card{}",
+                    "Played cards with",
+                    "{C:clubs}#2#{} suit give",
+                    "{C:mult}+#1#{} Mult when scored", 
+                }
+            },
+            doj_acrobat = {
+                text = {
+                    "{C:attention}Always Scores{}",
+                    "{X:red,C:white} X#1# {} Mult on {C:attention}final",
+                    "{C:attention}hand{} of round"
+                }
+            },
+            doj_steel_joker = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "Gives {X:mult,C:white} X#1# {} Mult",
+                    "for each {C:attention}Steel Card",
+                    "in your {C:attention}full deck",
+                    "{C:inactive}(Currently {X:mult,C:white} X#2# {C:inactive} Mult)",
+                }
+            },
+            doj_cloud_9 = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}9{}",
+                    "Earn {C:money}$#1#{} for each",
+                    "{C:attention}9{} in your {C:attention}full deck",
+                    "at end of round",
+                    "{C:inactive}(Currently {C:money}$#2#{}{C:inactive})"
+                }
+            },
+            doj_fortune_teller = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "{C:red}+#1#{} Mult per {C:purple}Tarot{}",
+                    "card used this run",
+                    "{C:inactive}(Currently {C:red}+#2#{C:inactive})"
+                }
+            },
+            doj_bull = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "{C:chips}+#1#{} Chips for",
+                    "each {C:money}$1{} you have",
+                    "{C:inactive}(Currently {C:chips}+#2#{C:inactive} Chips)"
+                }
+            },
+            doj_trousers = {
+                text = {
+                    "{C:attention}Always Scores{}",
+                    "This Card gains {C:mult}+#1#{} Mult",
+                    "if played hand contains",
+                    "a {C:attention}#2#",
+                    "{C:inactive}(Currently {C:red}+#3#{C:inactive} Mult)"
+                }
+            },
+            doj_red_card = {
+                text = {
+                    "{C:attention}Always Scores{}",
+                    "This Card gains",
+                    "{C:red}+#1#{} Mult when any",
+                    "{C:attention}Booster Pack{} is skipped",
+                    "{C:inactive}(Currently {C:red}+#2#{C:inactive} Mult)"
+                }
+            },
+            doj_square = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "This Card gains {C:chips}+#2#{} Chips",
+                    "if played hand has",
+                    "exactly {C:attention}4{} cards",
+                    "{C:inactive}(Currently {C:chips}#1#{C:inactive} Chips)"
+                }
+            },
+            doj_troubadour = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "{C:attention}+#1#{} hand size,",
+                    "{C:blue}-#2#{} hand"
+                }
+            },
+            doj_misprint = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                }
+            },
+            doj_delayed_grat = {
+                text = {
+                    "{C:attention}Always Scores{}",
+                    "Earn {C:money}$#1#{} per {C:attention}discard{} if",
+                    "no discards are used",
+                    "by end of the round"
+                }
+            },
+            doj_seltzer = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "Retrigger all",
+                    "cards played for",
+                    "the next {C:attention}#1#{} hands",
+                }
+            },
+            doj_drunkard = {
+                text = {
+                    "{C:attention}Always Scores{}",
+                    "{C:red}+#1#{} discard",
+                }
+            },
+            doj_sock_and_buskin = {
+                text = {
+                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "Retrigger all",
+                    "played {C:attention}face{} cards"
+                }
+            },
+            doj_tribe = {
+                text = {
+                    "{C:attention}Always Scores{}",
+                    "{X:mult,C:white} X#1# {} Mult if played",
+                    "hand contains a {C:attention}#2#",
+                    "while this card is played",
+                    "or stays in hand"
                 }
             },
         },

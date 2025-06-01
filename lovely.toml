@@ -121,7 +121,19 @@ if self.ability and self.ability.trading and (self.ability.trading.name == "Driv
         if next(SMODS.get_enhancements(v)) then self.ability.trading.config.tally = self.ability.trading.config.tally+1 end
     end
 end
-if (self.area == G.hand) and self.ability and self.ability.trading and (self.ability.trading.config.doj_hand_size or self.ability.trading.config.doj_discards) then
+if self.ability and self.ability.trading and (self.ability.trading.name == "Steel Joker") then
+    self.ability.trading.config.steel_tally = 0
+    for k, v in pairs(G.playing_cards) do
+        if SMODS.has_enhancement(v, 'm_steel') then self.ability.trading.config.steel_tally = self.ability.trading.config.steel_tally + 1 end
+    end
+end
+if self.ability and self.ability.trading and (self.ability.trading.name == "Cloud 9") then
+    self.ability.trading.config.nine_tally = 0
+    for k, v in pairs(G.playing_cards) do
+        if v:get_id() == 9 then self.ability.trading.config.nine_tally = self.ability.trading.config.nine_tally + 1 end
+    end
+end
+if (self.area == G.hand) and self.ability and self.ability.trading and (self.ability.trading.config.doj_hand_size or self.ability.trading.config.doj_discards or self.ability.trading.config.doj_hands) then
     local curr_debuff = self.debuff
     local old_debuff = self.ability.trading.config.doj_debuffed
     if curr_debuff == nil then
@@ -139,11 +151,19 @@ if (self.area == G.hand) and self.ability and self.ability.trading and (self.abi
                 G.hand.config.real_card_limit = (G.hand.config.real_card_limit or G.hand.config.card_limit) + self.ability.trading.config.doj_hand_size
                 G.hand.config.card_limit = math.max(0, G.hand.config.real_card_limit)
             end
-        elseif self.ability.trading.config.doj_discards then
+        end
+        if self.ability.trading.config.doj_discards then
             if curr_debuff then
                 ease_discard(-self.ability.trading.config.doj_discards)
             else
                 ease_discard(self.ability.trading.config.doj_discards)
+            end
+        end
+        if self.ability.trading.config.doj_hands then
+            if curr_debuff then
+                ease_hands_played(-self.ability.trading.config.doj_hands)
+            else
+                ease_hands_played(self.ability.trading.config.doj_hands)
             end
         end
     end
@@ -161,6 +181,9 @@ payload = '''   if card.ability and card.ability.trading and card.ability.tradin
     end
     if card.ability and card.ability.trading and card.ability.trading.config.doj_discards and (self == G.hand) then
         ease_discard(-card.ability.trading.config.doj_discards)
+    end
+    if card.ability and card.ability.trading and card.ability.trading.config.doj_hands and (self == G.hand) then
+        ease_hands_played(-card.ability.trading.config.doj_hands)
     end'''
 match_indent = true
 
@@ -175,6 +198,9 @@ payload = '''   if card.ability and card.ability.trading and card.ability.tradin
     end
     if card.ability and card.ability.trading and card.ability.trading.config.doj_discards and (self == G.hand) then
         ease_discard(card.ability.trading.config.doj_discards)
+    end
+    if card.ability and card.ability.trading and card.ability.trading.config.doj_hands and (self == G.hand) then
+        ease_hands_played(card.ability.trading.config.doj_hands)
     end'''
 match_indent = true
 
@@ -210,7 +236,8 @@ target = 'functions/common_events.lua'
 pattern = '''for k, v in pairs(other.ability) do'''
 position = 'before'
 payload = '''local hand_size1 = not new_card.debuff and new_card.ability and new_card.ability.trading and new_card.ability.trading.config.doj_hand_size or 0
-local discards1 = not new_card.debuff and new_card.ability and new_card.ability.trading and new_card.ability.trading.config.doj_discards or 0'''
+local discards1 = not new_card.debuff and new_card.ability and new_card.ability.trading and new_card.ability.trading.config.doj_discards or 0
+local hands1 = not new_card.debuff and new_card.ability and new_card.ability.trading and new_card.ability.trading.config.doj_hands or 0'''
 match_indent = true
 
 [[patches]]
@@ -220,6 +247,7 @@ pattern = '''if not strip_edition then'''
 position = 'before'
 payload = '''local hand_size2 = not new_card.debuff and new_card.ability and new_card.ability.trading and new_card.ability.trading.config.doj_hand_size or 0
 local discards2 = not new_card.debuff and new_card.ability and new_card.ability.trading and new_card.ability.trading.config.doj_discards or 0
+local hands2 = not new_card.debuff and new_card.ability and new_card.ability.trading and new_card.ability.trading.config.doj_hands or 0
 if new_card.area == G.hand then
     if hand_size1 ~= hand_size2 then
         local change = hand_size2 - hand_size1
@@ -228,7 +256,11 @@ if new_card.area == G.hand then
     end
     if discards1 ~= discards2 then
         local change = discards2 - discards1
-        ease_discard(math.max(-G.GAME.current_round.discards_left, change))
+        ease_discard(change)
+    end
+    if hands1 ~= hands2 then
+        local change = hands2 - hands1
+        ease_hands_played(change)
     end
 end'''
 match_indent = true
@@ -252,5 +284,27 @@ if G.play and G.play.cards then
         G.GAME.doj_oopsness = oops_count
         G.GAME.probabilities.normal = G.GAME.probabilities.normal * change
     end
+end'''
+match_indent = true
+
+[[patches]]
+[patches.pattern]
+target = 'card.lua'
+pattern = '''local badges = {}'''
+position = 'after'
+payload = '''if self.ability and self.ability.trading and (self.ability.trading.name == "Misprint") then
+    local r_mults = {}
+    for i = self.ability.trading.config.min, self.ability.trading.config.max do
+        r_mults[#r_mults+1] = tostring(i)
+    end
+    local loc_mult = ' '..(localize('k_mult'))..' '
+    main_end = {
+        {n=G.UIT.T, config={text = '  +',colour = G.C.MULT, scale = 0.32}},
+        {n=G.UIT.O, config={object = DynaText({string = r_mults, colours = {G.C.RED},pop_in_rate = 9999999, silent = true, random_element = true, pop_delay = 0.5, scale = 0.32, min_cycle_time = 0})}},
+        {n=G.UIT.O, config={object = DynaText({string = {
+            {string = 'rand()', colour = G.C.JOKER_GREY},{string = "#@"..(G.deck and G.deck.cards[1] and G.deck.cards[#G.deck.cards].base.id or 11)..(G.deck and G.deck.cards[1] and G.deck.cards[#G.deck.cards].base.suit:sub(1,1) or 'D'), colour = G.C.RED},
+            loc_mult, loc_mult, loc_mult, loc_mult, loc_mult, loc_mult, loc_mult, loc_mult, loc_mult, loc_mult, loc_mult, loc_mult, loc_mult},
+        colours = {G.C.UI.TEXT_DARK},pop_in_rate = 9999999, silent = true, random_element = true, pop_delay = 0.2011, scale = 0.32, min_cycle_time = 0})}},
+    }
 end'''
 match_indent = true
