@@ -5,7 +5,7 @@
 --- MOD_AUTHOR: [mathguy]
 --- MOD_DESCRIPTION: Deck of Jokers
 --- DEPENDENCIES: [CustomCards]
---- VERSION: 1.1.1a
+--- VERSION: 1.1.1b
 ----------------------------------------------
 ------------MOD CODE -------------------------
 
@@ -583,6 +583,7 @@ if pc_add_cross_mod_card then
                     G.GAME.dollar_buffer = (G.GAME.dollar_buffer or 0) + config_thing.dollars
                     G.E_MANAGER:add_event(Event({func = (function() G.GAME.dollar_buffer = 0; return true end)}))
                     card_eval_status_text(blueprint_card or card, 'jokers', nil, nil, nil, {message = localize('$')..config_thing.dollars, colour = G.C.MONEY})
+                    table.insert(effects, {})
                 end
             elseif context.is_face then
                 return true
@@ -809,6 +810,7 @@ if pc_add_cross_mod_card then
             local config_thing = card.ability.trading.config 
             if context.before and ((context.cardarea == G.play) or (context.cardarea == G.hand)) and next(context.poker_hands['Straight']) and not context.blueprint then
                 config_thing.chips = config_thing.chips + config_thing.mod_chips
+                table.insert(effects, {})
                 card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize('k_upgrade_ex'), colour = G.C.CHIPS})
             elseif context.playing_card_main then
                 if config_thing.chips ~= 0 then
@@ -848,6 +850,7 @@ if pc_add_cross_mod_card then
             local config_thing = card.ability.trading.config 
             if context.using_consumeable and (context.using_consumeable.ability.set == "Planet") and not context.blueprint then
                 config_thing.x_mult = config_thing.x_mult + config_thing.mod_x_mult
+                table.insert(effects, {})
                 card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize('k_upgrade_ex'), colour = G.C.FILTER})
             elseif context.playing_card_main then
                 if config_thing.x_mult ~= 1 then
@@ -887,6 +890,7 @@ if pc_add_cross_mod_card then
             local config_thing = card.ability.trading.config 
             if context.discard and (context.other_card:get_id() == G.GAME.current_round.mail_card.id) then
                 ease_dollars(config_thing.dollars)
+                table.insert(effects, {})
                 card_eval_status_text(blueprint_card or card, 'extra', nil, nil, nil, {message = localize('$')..config_thing.dollars, colour = G.C.MONEY})
             elseif context.is_face then
                 return true
@@ -974,7 +978,7 @@ if pc_add_cross_mod_card then
                             return true
                         end}))
                     card_eval_status_text(blueprint_card or card, 'extra', nil, nil, nil, {message = localize('k_duplicated_ex')})
-                    return nil, true
+                    table.insert(effects, {})
                 end
             elseif context.is_face then
                 return true
@@ -1201,6 +1205,7 @@ if pc_add_cross_mod_card then
                 update_hand_text({sound = 'button', volume = 0.7, pitch = 0.8, delay = 0.3}, {handname=localize(text, 'poker_hands'),chips = G.GAME.hands[text].chips, mult = G.GAME.hands[text].mult, level=G.GAME.hands[text].level})
                 level_up_hand(blueprint_card or card, text, nil, 1)
                 update_hand_text({sound = 'button', volume = 0.7, pitch = 1.1, delay = 0}, {mult = 0, chips = 0, handname = '', level = ''})
+                table.insert(effects, {})
             elseif context.is_face then
                 return true
             elseif context.does_score then
@@ -1313,6 +1318,7 @@ if pc_add_cross_mod_card then
                             return true end }))
                         card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize('ph_boss_disabled')})
                     return true end }))
+                    table.insert(effects, {})
                 end
             elseif context.is_face then
                 return true
@@ -1749,6 +1755,7 @@ if pc_add_cross_mod_card then
             if context.selling_card and not context.blueprint then
                 config_thing.x_mult = config_thing.x_mult + config_thing.mod_x_mult
                 card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize('k_upgrade_ex'), colour = G.C.FILTER})
+                table.insert(effects, {})
             elseif context.playing_card_main then
                 if config_thing.x_mult ~= 1 then
                     table.insert(effects, {
@@ -1999,6 +2006,7 @@ if pc_add_cross_mod_card then
                 end
                 if faces > 0 then 
                     card_eval_status_text(blueprint_card or card, 'extra', nil, nil, nil, {message = localize('k_gold'), colour = G.C.MONEY})
+                    table.insert(effects, {})
                 end
             elseif context.is_face then
                 return true
@@ -2149,6 +2157,7 @@ if pc_add_cross_mod_card then
                 config_thing.x_mult = config_thing.x_mult + gain
                 if gain > 0 then
                     card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_xmult', vars = {config_thing.x_mult}}, colour = G.C.FILTER})
+                    table.insert(effects, {})
                 end
             elseif context.playing_card_main then
                 if config_thing.x_mult ~= 1 then
@@ -2238,6 +2247,7 @@ if pc_add_cross_mod_card then
                 elseif (config_thing.chips > 0) then
                     card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize{type='variable',key='a_chips_minus',vars={config_thing.mod_chips}}, colour = G.C.CHIPS})
                     delay(0.1)
+                    table.insert(effects, {})
                 end
             elseif (context.destroying_card == card) and not context.blueprint and (context.cardarea == G.play) then
                 if (config_thing.chips <= config_thing.mod_chips) and not context.blueprint then
@@ -2280,6 +2290,7 @@ if pc_add_cross_mod_card then
                 end
                 if config_thing.doj_hand_size > 0 then
                     card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize{type='variable',key='a_handsize_minus',vars={config_thing.mod_hand_size}}, colour = G.C.FILTER})
+                    table.insert(effects, {})
                 else
                     card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize('k_eaten_ex'), colour = G.C.FILTER})
                     G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, blockable = false,
@@ -2330,6 +2341,8 @@ if pc_add_cross_mod_card then
                             card:remove()
                             card = nil
                         return true; end}))
+                else
+                    table.insert(effects, {})
                 end
             elseif context.does_score then
                 return true
@@ -2403,6 +2416,7 @@ if pc_add_cross_mod_card then
                             return true
                         end)}))
                     card_eval_status_text(blueprint_card or card, 'extra', nil, nil, nil, {message = localize('k_plus_spectral'), colour = G.C.SECONDARY_SET.Spectral})
+                    table.insert(effects, {})
                 end
             elseif context.does_score then
                 return true
@@ -2447,6 +2461,7 @@ if pc_add_cross_mod_card then
                             return true
                     end}))   
                     card_eval_status_text(blueprint_card or card, 'extra', nil, nil, nil, {message = localize('k_plus_joker'), colour = G.C.BLUE}) 
+                    table.insert(effects, {})
                 end
             elseif context.is_face then
                 return true
@@ -2554,6 +2569,7 @@ if pc_add_cross_mod_card then
                         return true
                     end}))
                     card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_mult', vars = {config_thing.mult+2*sliced_card.sell_cost}}, colour = G.C.RED, no_juice = true})
+                    table.insert(effects, {})
                 end
             elseif context.does_score then
                 return true
@@ -2604,6 +2620,7 @@ if pc_add_cross_mod_card then
                     return true end }))
                 end
                 card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_xmult', vars = {config_thing.x_mult}}})
+                table.insert(effects, {})
             elseif context.is_face then
                 return true
             elseif context.does_score then
@@ -2734,6 +2751,7 @@ if pc_add_cross_mod_card then
                 config_thing.mult = config_thing.mult - config_thing.mod_mult
                 if config_thing.mult > 0 then
                     card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize{type='variable',key='a_mult_minus',vars={config_thing.mod_mult}}, colour = G.C.MULT})
+                    table.insert(effects, {})
                 else
                     card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize('k_eaten_ex'), colour = G.C.RED})
                     G.E_MANAGER:add_event(Event({trigger = 'after', delay = 0.3, blockable = false,
@@ -2905,9 +2923,11 @@ if pc_add_cross_mod_card then
                     if config_thing.x_mult > 1 then
                         config_thing.x_mult = 1
                         card_eval_status_text(blueprint_card or card, 'extra', nil, nil, nil, {message = localize('k_reset'), colour = G.C.FILTER})
+                        table.insert(effects, {})
                     end
                 else
                     config_thing.x_mult = config_thing.x_mult + config_thing.mod_x_mult
+                    table.insert(effects, {})
                 end
             elseif context.playing_card_main then
                 table.insert(effects, {
@@ -3075,6 +3095,7 @@ if pc_add_cross_mod_card then
                     ease_hands_played(config_thing.hands)
                     card_eval_status_text(blueprint_card or card, 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_hands', vars = {config_thing.hands}}})
                 return true end }))
+                table.insert(effects, {})
             elseif context.is_face then
                 return true
             elseif context.does_score then
@@ -3114,11 +3135,13 @@ if pc_add_cross_mod_card then
             elseif context.discard and (context.other_card:get_id() == 11) then
                 config_thing.x_mult = config_thing.x_mult + config_thing.mod_x_mult
                 card_eval_status_text(blueprint_card or card, 'extra', nil, nil, nil, {message = localize{type='variable',key='a_xmult',vars={config_thing.x_mult}}, colour = G.C.RED})
+                table.insert(effects, {})
             elseif context.get_id then
                 return 11
             elseif context.total_end_of_round and not context.blueprint then
                 config_thing.x_mult = 1
                 card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize('k_reset'), colour = G.C.RED})
+                table.insert(effects, {})
             elseif context.is_face then
                 return true
             elseif context.does_score then
@@ -3232,9 +3255,11 @@ if pc_add_cross_mod_card then
             elseif context.before and ((context.cardarea == G.play) or (context.cardarea == G.hand)) and not context.blueprint then
                 config_thing.mult = config_thing.mult + config_thing.hand_add
                 card_eval_status_text(blueprint_card or card, 'extra', nil, nil, nil, {message = localize{type='variable',key='a_mult',vars={config_thing.hand_add}}})
+                table.insert(effects, {})
             elseif context.pre_discard and (config_thing.mult > 0) then
                 config_thing.mult = config_thing.mult - config_thing.discard_sub
                 card_eval_status_text(blueprint_card or card, 'extra', nil, nil, nil, {message = localize{type='variable',key='a_mult_minus',vars={config_thing.discard_sub}}})
+                table.insert(effects, {})
             elseif context.is_face then
                 return true
             elseif context.does_score then
@@ -3308,6 +3333,7 @@ if pc_add_cross_mod_card then
                         return true
                     end}))
                 playing_card_joker_effects({_card})
+                table.insert(effects, {})
             elseif context.does_score then
                 return true
             end
@@ -3346,6 +3372,8 @@ if pc_add_cross_mod_card then
                             card:remove()
                             card = nil
                         return true; end}))
+                else
+                    table.insert(effects, {})
                 end
             elseif context.does_score then
                 return true
@@ -3398,6 +3426,7 @@ if pc_add_cross_mod_card then
                     draw_card(G.play,G.deck, 90,'up', nil)
                 
                 playing_card_joker_effects({card_})
+                table.insert(effects, {})
             elseif context.is_face then
                 return true
             elseif context.does_score then
@@ -3484,6 +3513,7 @@ if pc_add_cross_mod_card then
                             card_eval_status_text(blueprint_card or card, 'extra', nil, nil, nil, {message = localize('k_plus_tarot'), colour = G.C.PURPLE})                       
                         return true
                     end)}))
+                    table.insert(effects, {})
             elseif context.is_face then
                 return true
             elseif context.does_score then
@@ -3588,6 +3618,7 @@ if pc_add_cross_mod_card then
                 if #enhanced > 0 then 
                     config_thing.x_mult = config_thing.x_mult + config_thing.mod_x_mult*#enhanced
                     card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_xmult', vars = {config_thing.x_mult}}, colour = G.C.MULT})
+                    table.insert(effects, {})
                 end
             elseif context.playing_card_main then
                 if config_thing.x_mult ~= 1 then
@@ -3825,6 +3856,7 @@ if pc_add_cross_mod_card then
             elseif context.playing_card_added and ((context.cardarea == G.play) or (context.cardarea == G.hand)) and (not context.blueprint) and context.cards and context.cards[1] then
                 config_thing.x_mult = config_thing.x_mult + #context.cards*config_thing.mod_x_mult
                 card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_xmult', vars = {config_thing.x_mult}}})
+                table.insert(effects, {})
             elseif context.is_face then
                 return true
             elseif context.does_score then
@@ -4047,6 +4079,7 @@ if pc_add_cross_mod_card then
             elseif context.discard and context.other_card:is_suit(G.GAME.current_round.castle_card.suit) and not context.other_card.debuff then
                 config_thing.chips = config_thing.chips + config_thing.mod_chips
                 card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize('k_upgrade_ex'), colour = G.C.CHIPS})
+                table.insert(effects, {})
             elseif context.does_score then
                 return true
             end
@@ -4405,6 +4438,7 @@ if pc_add_cross_mod_card then
             if context.before and (context.cardarea == G.play) then
                 ease_dollars(config_thing.dollars)
                 card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize('$')..config_thing.dollars, colour = G.C.MONEY})
+                table.insert(effects, {})
             elseif context.total_end_of_round then
                 local _poker_hands = {}
                 for k, v in pairs(G.GAME.hands) do
@@ -4412,6 +4446,7 @@ if pc_add_cross_mod_card then
                 end
                 config_thing.poker_hand = pseudorandom_element(_poker_hands, pseudoseed('to_do'))
                 card_eval_status_text(blueprint_card or card, 'extra', nil, nil, nil, {message = localize('k_reset')})
+                table.insert(effects, {})
             elseif context.does_score then
                 return true
             end
@@ -4489,6 +4524,8 @@ if pc_add_cross_mod_card then
                             return true
                         end)}))
                     card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize('k_plus_tarot'), colour = G.C.PURPLE})
+                else
+                    table.insert(effects, {})
                 end
             elseif context.is_face then
                 return true
@@ -4530,6 +4567,7 @@ if pc_add_cross_mod_card then
                 config_thing.x_mult = config_thing.x_mult + gain
                 if gain > 0 then
                     card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_xmult', vars = {config_thing.x_mult}}, colour = G.C.FILTER})
+                    table.insert(effects, {})
                 end
             elseif context.using_consumeable and (context.using_consumeable.ability.name == "The Hanged Man") and not context.blueprint then
                 local gain = 0
@@ -4541,6 +4579,7 @@ if pc_add_cross_mod_card then
                 config_thing.x_mult = config_thing.x_mult + gain
                 if gain > 0 then
                     card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_xmult', vars = {config_thing.x_mult}}, colour = G.C.FILTER})
+                    table.insert(effects, {})
                 end
             elseif context.playing_card_main then
                 if config_thing.x_mult ~= 1 then
@@ -4678,9 +4717,11 @@ if pc_add_cross_mod_card then
                     config_thing.mult = 0
                     if last_mult > 0 then
                         card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize('k_reset'), colour = G.C.FILTER})
+                        
                     end
                 else
                     config_thing.mult = config_thing.mult + config_thing.mod_mult
+                    table.insert(effects, {})
                 end
             elseif context.playing_card_main then
                 if config_thing.mult > 0 then
@@ -4722,8 +4763,10 @@ if pc_add_cross_mod_card then
                     config_thing.used_discards = config_thing.discards
                     config_thing.x_mult = config_thing.x_mult + config_thing.mod_x_mult
                     card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize{type='variable',key='a_xmult',vars={config_thing.x_mult}}, colour = G.C.RED, delay = 0.2})
+                    table.insert(effects, {})
                 else
                     config_thing.used_discards = config_thing.used_discards - 1
+                    table.insert(effects, {})
                 end
             elseif context.playing_card_main then
                 if config_thing.x_mult ~= 1 then
@@ -4782,6 +4825,7 @@ if pc_add_cross_mod_card then
                             card = blueprint_card or card
                         })
                     end
+                    table.insert(effects, {})
                 end
             elseif context.get_id then
                 return 14
@@ -4820,6 +4864,7 @@ if pc_add_cross_mod_card then
                 else
                     config_thing.x_mult = config_thing.x_mult - config_thing.mod_x_mult
                     card_eval_status_text(card, 'extra', nil, nil, nil, {delay = 0.2, message = localize{type='variable',key='a_xmult_minus',vars={config_thing.mod_x_mult}}, colour = G.C.RED})
+                    table.insert(effects, {})
                 end
                 
             elseif context.playing_card_main then
@@ -5109,6 +5154,7 @@ if pc_add_cross_mod_card then
             if context.shop_reroll then
                 config_thing.mult = config_thing.mult + config_thing.mod_mult
                 card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize{type = 'variable', key = 'a_mult', vars = {config_thing.mult}}, colour = G.C.MULT})
+                table.insert(effects, {})
             elseif context.playing_card_main then
                 if config_thing.mult > 0 then
                     table.insert(effects, {
@@ -5225,6 +5271,7 @@ if pc_add_cross_mod_card then
                             card_eval_status_text(blueprint_card or card, 'extra', nil, nil, nil, {message = localize('$')..config_thing.dollars,colour = G.C.MONEY, delay = 0.45})
                             return true
                         end}))
+                    table.insert(effects, {})
                 end
             elseif context.does_score then
                 return true
@@ -5259,6 +5306,8 @@ if pc_add_cross_mod_card then
                         dollars = config_thing.dollars,
                         card = context.other_card
                     })
+                elseif context.other_card:is_face() then
+                    table.insert(effects, {})
                 end
             elseif context.does_score then
                 return true
@@ -5440,6 +5489,9 @@ if pc_add_cross_mod_card then
                     local text,disp_text = G.FUNCS.get_poker_hand_info(G.play.cards)
                     card_eval_status_text(blueprint_card or card, 'extra', nil, nil, nil, {message = localize('k_level_up_ex')})
                     level_up_hand(blueprint_card or card, text, nil, 1)
+                    table.insert(effects, {})
+                else
+                    table.insert(effects, {})
                 end
             elseif context.is_face then
                 return true
@@ -5857,6 +5909,7 @@ if pc_add_cross_mod_card then
             elseif context.before and (context.cardarea == G.play) then
                 config_thing.mult = config_thing.mult + config_thing.mod_mult
                 card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize('k_upgrade_ex'), colour = G.C.RED})
+                table.insert(effects, {})
             elseif context.does_score then
                 return true
             end
@@ -5903,6 +5956,7 @@ if pc_add_cross_mod_card then
                         }) 
                         return true
                     end}))
+                table.insert(effects, {})
             elseif context.does_score then
                 return true
             end
@@ -5938,6 +5992,7 @@ if pc_add_cross_mod_card then
             elseif context.before and (context.cardarea == G.play) and (#context.full_hand == 4) and not context.blueprint then
                 config_thing.chips = config_thing.chips + config_thing.mod_chips
                 card_eval_status_text(card, 'extra', nil, nil, nil, {message = localize('k_upgrade_ex'), colour = G.C.CHIPS})
+                table.insert(effects, {})
             elseif context.is_face then
                 return true
             elseif context.does_score then
@@ -6085,6 +6140,7 @@ if pc_add_cross_mod_card then
                 elseif (config_thing.hands > 0) then
                     card_eval_status_text(card, 'extra', nil, nil, nil, {message = tostring(config_thing.hands), colour = G.C.FILTER})
                     delay(0.1)
+                    table.insert(effects, {})
                 end
             elseif (context.destroying_card == card) and not context.blueprint and (context.cardarea == G.play) then
                 if (config_thing.hands <= 1) and not context.blueprint then

@@ -235,7 +235,11 @@ match_indent = true
 target = 'functions/common_events.lua'
 pattern = '''for k, v in pairs(other.ability) do'''
 position = 'before'
-payload = '''local hand_size1 = not new_card.debuff and new_card.ability and new_card.ability.trading and new_card.ability.trading.config.doj_hand_size or 0
+payload = '''new_card.doj_weeified = nil
+new_card.doj_photoified = nil
+new_card.doj_halfified = nil
+new_card.doj_squarified = nil
+local hand_size1 = not new_card.debuff and new_card.ability and new_card.ability.trading and new_card.ability.trading.config.doj_hand_size or 0
 local discards1 = not new_card.debuff and new_card.ability and new_card.ability.trading and new_card.ability.trading.config.doj_discards or 0
 local hands1 = not new_card.debuff and new_card.ability and new_card.ability.trading and new_card.ability.trading.config.doj_hands or 0'''
 match_indent = true
