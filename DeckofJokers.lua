@@ -5,7 +5,7 @@
 --- MOD_AUTHOR: [mathguy]
 --- MOD_DESCRIPTION: Deck of Jokers
 --- DEPENDENCIES: [CustomCards]
---- VERSION: 1.1.1b
+--- VERSION: 1.1.1c
 ----------------------------------------------
 ------------MOD CODE -------------------------
 
@@ -503,8 +503,9 @@ if pc_add_cross_mod_card then
             if context.individual and (context.cardarea == G.play) and (card.area == G.play) then
                 if context.other_card:is_suit("Hearts") and (pseudorandom('bloodstone') < G.GAME.probabilities.normal/config_thing.odds) then
                     table.insert(effects, {
+                        extra = {focus = context.other_card},
                         x_mult = config_thing.x_mult,
-                        card = context.other_card
+                        card = blueprint_card or card
                     })
                 elseif context.other_card:is_suit("Hearts") then
                     table.insert(effects, {})
@@ -704,7 +705,8 @@ if pc_add_cross_mod_card then
                 if (id == 2) or (id == 3) or (id == 5) or (id == 8) or (id == 14) then
                     table.insert(effects, {
                         mult = config_thing.mult,
-                        card = context.other_card
+                        card = blueprint_card or card,
+                        extra = {focus = context.other_card},
                     })
                 end
             elseif context.get_id then
@@ -785,6 +787,7 @@ if pc_add_cross_mod_card then
                 }))
                 playing_card_joker_effects({_card})
                 card_eval_status_text(blueprint_card or card, 'extra', nil, nil, nil, {message = localize('k_copied_ex'), colour = G.C.CHIPS})
+                table.insert(effects, {})
             elseif context.does_score then
                 return true
             end
@@ -1008,7 +1011,8 @@ if pc_add_cross_mod_card then
             if context.individual and (context.cardarea == G.play) and (card.area == G.play) and not context.end_of_round and (context.other_card.ability.name == "Gold Card") then
                 table.insert(effects, {
                     dollars = config_thing.dollars,
-                    card = context.other_card
+                    card = blueprint_card or card,
+                    extra = {focus = context.other_card},
                 })
             elseif context.does_score then
                 return true
@@ -1102,7 +1106,7 @@ if pc_add_cross_mod_card then
                     if context.other_card.lucky_trigger then
                         config_thing.x_mult = config_thing.x_mult + config_thing.mod_x_mult
                         table.insert(effects, {
-                            extra = {focus = blueprint_card or card, message = localize('k_upgrade_ex'), colour = G.C.MULT},
+                            extra = {focus = context.other_card, message = localize('k_upgrade_ex'), colour = G.C.MULT},
                             card = blueprint_card or card
                         })
                     end
@@ -1156,7 +1160,7 @@ if pc_add_cross_mod_card then
                     if context.other_card:get_id() == 2 then
                         config_thing.chips = config_thing.chips + config_thing.mod_chips
                         table.insert(effects, {
-                            extra = {focus = blueprint_card or card, message = localize('k_upgrade_ex'), colour = G.C.CHIPS},
+                            extra = {focus = context.other_card, message = localize('k_upgrade_ex'), colour = G.C.CHIPS},
                             card = blueprint_card or card
                         })
                     end
@@ -1594,7 +1598,8 @@ if pc_add_cross_mod_card then
                 if (id == 12) or (id == 13) then
                     table.insert(effects, {
                         x_mult = config_thing.x_mult,
-                        card = context.other_card
+                        card = blueprint_card or card,
+                        extra = {focus = context.other_card},
                     })
                 end
             elseif context.get_id then
@@ -1718,14 +1723,14 @@ if pc_add_cross_mod_card then
                 if (rank.nominal ~= -999) and (card_ == context.other_card) then 
                     if context.other_card.debuff then
                         table.insert(effects, {
-                            message = localize('k_debuffed'),
-                            colour = G.C.RED,
-                            card = blueprint_card or self,
+                            card = blueprint_card or card,
+                            extra = {focus = context.other_card, message = localize('k_debuffed'), colour = G.C.RED},
                         })
                     else
                         table.insert(effects, {
                             mult = 2*rank.nominal,
-                            card = blueprint_card or self,
+                            card = blueprint_card or card,
+                            extra = {focus = context.other_card},
                         })
                     end
                 end
@@ -1823,7 +1828,8 @@ if pc_add_cross_mod_card then
                 if id == G.GAME.current_round.idol_card.id and context.other_card:is_suit(G.GAME.current_round.idol_card.suit) then
                     table.insert(effects, {
                         x_mult = config_thing.x_mult,
-                        card = context.other_card
+                        card = blueprint_card or card,
+                        extra = {focus = context.other_card},
                     })
                 end
             elseif context.is_face then
@@ -1896,7 +1902,8 @@ if pc_add_cross_mod_card then
                 if context.other_card:is_face() then
                     table.insert(effects, {
                         chips = config_thing.chips,
-                        card = context.other_card
+                        card = blueprint_card or card,
+                        extra = {focus = context.other_card},
                     })
                 end
             elseif context.is_face then
@@ -2837,12 +2844,14 @@ if pc_add_cross_mod_card then
                         table.insert(effects, {
                             message = localize('k_debuffed'),
                             colour = G.C.RED,
-                            card = blueprint_card or self,
+                            card = blueprint_card or card,
+                            extra = {focus = context.other_card},
                         })
                     else
                         table.insert(effects, {
                             mult = config_thing.mult,
-                            card = blueprint_card or self,
+                            card = blueprint_card or card,
+                            extra = {focus = context.other_card},
                         })
                     end
                 end
@@ -3458,12 +3467,14 @@ if pc_add_cross_mod_card then
                         table.insert(effects, {
                             message = localize('k_debuffed'),
                             colour = G.C.RED,
-                            card = blueprint_card or self,
+                            card = blueprint_card or card,
+                            extra = {focus = context.other_card},
                         })
                     else
                         table.insert(effects, {
                             x_mult = config_thing.x_mult,
-                            card = blueprint_card or self,
+                            card = blueprint_card or card,
+                            extra = {focus = context.other_card},
                         })
                     end
                 end
@@ -3686,7 +3697,8 @@ if pc_add_cross_mod_card then
                     table.insert(effects, {
                         mult = config_thing.mult,
                         chips = config_thing.chips,
-                        card = context.other_card
+                        card = blueprint_card or card,
+                        extra = {focus = context.other_card},
                     })
                 end
             elseif context.get_id then
@@ -3815,8 +3827,11 @@ if pc_add_cross_mod_card then
                 if context.other_card:is_face() and (pseudorandom('business') < G.GAME.probabilities.normal/config_thing.odds) then
                     table.insert(effects, {
                         dollars = 2,
-                        card = context.other_card
+                        card = blueprint_card or card,
+                        extra = {focus = context.other_card},
                     })
+                else
+
                 end
             elseif context.does_score then
                 return true
@@ -3914,9 +3929,9 @@ if pc_add_cross_mod_card then
                 context.other_card.ability.perma_bonus = context.other_card.ability.perma_bonus or 0
                 context.other_card.ability.perma_bonus = context.other_card.ability.perma_bonus + config_thing.chips
                 table.insert(effects, {
-                    extra = {message = localize('k_upgrade_ex'), colour = G.C.CHIPS},
+                    extra = {message = localize('k_upgrade_ex'), colour = G.C.CHIPS, focus = context.other_card},
                     colour = G.C.CHIPS,
-                    card = card
+                    card = blueprint_card or card,
                 })
             elseif context.is_face then
                 return true
@@ -3994,7 +4009,8 @@ if pc_add_cross_mod_card then
                 if context.other_card:is_suit(G.GAME.current_round.ancient_card.suit) then
                     table.insert(effects, {
                         x_mult = config_thing.x_mult,
-                        card = context.other_card
+                        card = blueprint_card or card,
+                        extra = {focus = context.other_card},
                     })
                 end
             elseif context.is_face then
@@ -4366,7 +4382,8 @@ if pc_add_cross_mod_card then
                 if (id == 2) or (id == 4) or (id == 6) or (id == 8) or (id == 10) then
                     table.insert(effects, {
                         mult = config_thing.mult,
-                        card = context.other_card
+                        card = blueprint_card or card,
+                        extra = {focus = context.other_card},
                     })
                 end
             elseif context.get_id then
@@ -4403,7 +4420,8 @@ if pc_add_cross_mod_card then
                 if (id == 3) or (id == 5) or (id == 7) or (id == 9) or (id == 14) then
                     table.insert(effects, {
                         chips = config_thing.chips,
-                        card = context.other_card
+                        card = blueprint_card or card,
+                        extra = {focus = context.other_card},
                     })
                 end
             elseif context.get_id then
@@ -4670,7 +4688,8 @@ if pc_add_cross_mod_card then
                     table.insert(effects, {
                         chips = config_thing.chips,
                         mult = config_thing.mult,
-                        card = context.other_card
+                        card = blueprint_card or card,
+                        extra = {focus = context.other_card},
                     })
                 end
             elseif context.get_id then
@@ -4941,7 +4960,8 @@ if pc_add_cross_mod_card then
                 if context.other_card:is_suit("Diamonds") then
                     table.insert(effects, {
                         dollars = config_thing.dollars,
-                        card = context.other_card
+                        card = blueprint_card or card,
+                        extra = {focus = context.other_card},
                     })
                 end
             elseif context.is_suit then
@@ -5013,7 +5033,8 @@ if pc_add_cross_mod_card then
                 if context.other_card:is_suit("Hearts") then
                     table.insert(effects, {
                         mult = config_thing.mult,
-                        card = context.other_card
+                        card = blueprint_card or card,
+                        extra = {focus = context.other_card},
                     })
                 end
             elseif context.is_suit then
@@ -5195,7 +5216,8 @@ if pc_add_cross_mod_card then
                 if context.other_card:is_face() then
                     table.insert(effects, {
                         mult = config_thing.mult,
-                        card = context.other_card
+                        card = blueprint_card or card,
+                        extra = {focus = context.other_card},
                     })
                 end
             elseif context.is_face then
@@ -5304,7 +5326,8 @@ if pc_add_cross_mod_card then
                 if context.other_card:is_face() and (pseudorandom('parking') < G.GAME.probabilities.normal/config_thing.odds) then
                     table.insert(effects, {
                         dollars = config_thing.dollars,
-                        card = context.other_card
+                        card = blueprint_card or card,
+                        extra = {focus = context.other_card},
                     })
                 elseif context.other_card:is_face() then
                     table.insert(effects, {})
@@ -5340,7 +5363,8 @@ if pc_add_cross_mod_card then
                 if context.other_card:is_suit("Clubs") then
                     table.insert(effects, {
                         mult = config_thing.mult,
-                        card = context.other_card
+                        card = blueprint_card or card,
+                        extra = {focus = context.other_card},
                     })
                 end
             elseif context.is_suit then
@@ -5382,7 +5406,8 @@ if pc_add_cross_mod_card then
                 if context.other_card == first_face then
                     table.insert(effects, {
                         x_mult = config_thing.x_mult,
-                        card = context.other_card
+                        card = blueprint_card or card,
+                        extra = {focus = context.other_card},
                     })
                 end
             elseif context.is_face then
@@ -5526,7 +5551,8 @@ if pc_add_cross_mod_card then
                 if context.other_card:is_suit("Spades") then
                     table.insert(effects, {
                         chips = config_thing.chips,
-                        card = context.other_card
+                        card = blueprint_card or card,
+                        extra = {focus = context.other_card},
                     })
                 end
             elseif context.is_suit then
@@ -5598,7 +5624,8 @@ if pc_add_cross_mod_card then
                 if context.other_card:is_suit("Diamonds") then
                     table.insert(effects, {
                         mult = config_thing.mult,
-                        card = context.other_card
+                        card = blueprint_card or card,
+                        extra = {focus = context.other_card},
                     })
                 end
             elseif context.is_suit then
@@ -5638,7 +5665,8 @@ if pc_add_cross_mod_card then
                 if context.other_card:is_suit("Spades") then
                     table.insert(effects, {
                         mult = config_thing.mult,
-                        card = context.other_card
+                        card = blueprint_card or card,
+                        extra = {focus = context.other_card},
                     })
                 end
             elseif context.is_suit then
@@ -5678,7 +5706,8 @@ if pc_add_cross_mod_card then
                 if context.other_card:is_suit("Clubs") then
                     table.insert(effects, {
                         mult = config_thing.mult,
-                        card = context.other_card
+                        card = blueprint_card or card,
+                        extra = {focus = context.other_card},
                     })
                 end
             elseif context.is_suit then
@@ -5952,7 +5981,7 @@ if pc_add_cross_mod_card then
                             message = localize{type = 'variable', key = 'a_mult', vars = {config_thing.mod_mult}},
                             colour = G.C.RED,
                             delay = 0.45, 
-                            card = self
+                            card = card
                         }) 
                         return true
                     end}))
