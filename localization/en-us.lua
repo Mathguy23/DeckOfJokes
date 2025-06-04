@@ -917,6 +917,8 @@ return {
                     "Upgrade the level of",
                     "the first {C:attention}discarded",
                     "poker hand each round",
+                    "while this card stays",
+                    "in hand"
                 }
             },
             doj_credit_card = {
@@ -1656,6 +1658,8 @@ return {
                     "Earn {C:money}$#1#{} at end of",
                     "round per unique {C:planet}Planet",
                     "card used this run",
+                    "while this card stays",
+                    "in hand",
                     "{C:inactive}(Currently {C:money}$#2#{C:inactive})"
                 }
             },
@@ -1952,7 +1956,7 @@ return {
             },
             doj_troubadour = {
                 text = {
-                    "{C:attention}Always Scores{}, {C:attention}Face Card{}",
+                    "{C:attention}Always Scores{}",
                     "{C:attention}+#1#{} hand size,",
                     "{C:blue}-#2#{} hand"
                 }

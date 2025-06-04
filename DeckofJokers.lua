@@ -5,7 +5,7 @@
 --- MOD_AUTHOR: [mathguy]
 --- MOD_DESCRIPTION: Deck of Jokers
 --- DEPENDENCIES: [CustomCards]
---- VERSION: 1.1.1
+--- VERSION: 1.1.1a
 ----------------------------------------------
 ------------MOD CODE -------------------------
 
@@ -5967,9 +5967,7 @@ if pc_add_cross_mod_card then
         },
         calculate = function(card, effects, context, reps, blueprint_card)
             local config_thing = card.ability.trading.config 
-            if context.is_face then
-                return true
-            elseif context.does_score then
+            if context.does_score then
                 return true
             end
         end,
