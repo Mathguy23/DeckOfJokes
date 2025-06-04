@@ -5,7 +5,7 @@
 --- MOD_AUTHOR: [mathguy]
 --- MOD_DESCRIPTION: Deck of Jokers
 --- DEPENDENCIES: [CustomCards]
---- VERSION: 1.1.0
+--- VERSION: 1.1.1
 ----------------------------------------------
 ------------MOD CODE -------------------------
 
@@ -1174,7 +1174,7 @@ if pc_add_cross_mod_card then
         end,
         loc_vars = function(specific_vars, info_queue, card)
             local config_thing = specific_vars.collect.config
-            return {config_thing.mod_chips, config_thing.chips}
+            return {config_thing.chips, config_thing.mod_chips}
         end
     }
 
